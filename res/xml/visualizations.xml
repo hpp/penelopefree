@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen  xmlns:android="http://schemas.android.com/apk/res/android"
+    android:title="Visuallizations">
+	<com.harmonicprocesses.penelopefree.settings.SeekBarPreference
+	    android:key="visual_number_of_particles"
+    	android:title="@string/number_of_particles"
+    	android:summary="How many particles included in simulation"
+    	android:dialogMessage="Number of particles."
+    	android:defaultValue="6000"
+    	android:text="particles"
+    	android:max="100000"/>
+    <com.harmonicprocesses.penelopefree.settings.SeekBarPreference
+        android:key="visual_type_of_particles"
+    	android:summary="Set the diffusion of dampening and resonating particles."
+    	android:dialogMessage="Percent Particles "
+    	android:defaultValue="0"
+    	android:text="particles"
+    	android:max="100"/>
+</PreferenceScreen>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen  xmlns:android="http://schemas.android.com/apk/res/android"
+    android:title="Devices">
+	<ListPreference
+    	android:key="input_device_key"
+        android:title="@string/input_device"
+        android:entries="@array/input_devices_entries"
+        android:entryValues="@array/input_devices_keys"
+        android:defaultValue="@string/input_default"/>
+    <ListPreference
+        android:key="output_device_key"
+        android:title="@string/output_device"
+        android:entries="@array/output_devices_entries"
+        android:entryValues="@array/output_devices_keys"
+        android:defaultValue="@string/output_default"/>/>
+</PreferenceScreen> 

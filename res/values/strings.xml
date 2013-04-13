@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Penelope</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="OnAirTrue">On Air</string>
+    <string name="OnAirFalse">Standby</string>
+    <string name="record_button">Record</string>
+	<string name="devices">Devices</string>
+	<string name="input_device">Input Device</string> 
+	<string name="output_device">Output Device</string>
+	<string name="visualizations">Visualizations</string>
+	<string name="number_of_particles">Number of Particles</string>
+	<string name="particle_diffusion">Type of Particles</string>
+	<string name="addons">Add-ons</string>
+	<string name="report_problem">Report a problem</string>
+	<string name="shapes">Shapes</string>
+	<string name="open_account">Open Account</string>
+	<string name="options">Settings</string>
+	<string name="tutorial">Tutorial</string>
+	<string name="about">About</string>
+	<string name="option_record">Records</string>
+	<string name="option_help">Help</string>
+	<string name="blank"></string>
+	<string name="tutorial_key">tutorial_key</string>
+	<string name="report_problem_key">report_problem_key</string>
+	<string name="about_key">about_key</string>
+	<string name="visualizations_category_key">visualizations_category_key</string>
+	<string name="addons_category_key">addons_category_key</string>
+	<string name="devices_category_key">devices_category_key</string>
+	<string name="performance_options_category">Performance Options</string>
+	<string name="sound_category">Audio</string>
+	<string name="invert_phase">Invert Phase</string>
+	<string name="visualization">Visualization</string>
+	<string name="accelerometer">Accelerometer</string>
+	<string name="output_audio">Output Audio</string>
+	
+	<string-array name="notes">
+	    
+	    <item name="note0">A</item>
+		<item name="note1">Bb</item>
+		<item name="note2">B</item>
+		<item name="note3">C</item>
+		<item name="note4">Db</item>
+		<item name="note5">D</item>
+		<item name="note6">Eb</item>
+		<item name="note7">E</item>
+		<item name="note8">F</item>
+		<item name="note9">Gb</item>
+		<item name="note10">G</item>
+		<item name="note11">Ab</item>
+		
+	</string-array>
+	
+	<string-array name="input_devices_entries">
+	    <item name="input_default">System Default(Internal Mic)</item>
+	    <item name="inUSB_default">USB Input Device</item>
+	</string-array>
+	<string-array name="input_devices_keys">
+	    <item name="input_default">System Default(Internal Mic)</item>
+	    <item name="inUSB_default">USB Input Device</item>
+	</string-array>
+	<string name="input_default">System Default(Internal Mic)</string>
+	<string name="inUSB_default">USB Input Device</string>
+	
+	<string-array name="output_devices_entries">
+	    <item name="output_default">System Default(Playback Speaker)</item>
+	    <item name="outUSB_default">USB Output Device</item>
+	</string-array>
+		<string-array name="output_devices_keys">
+	    <item name="output_default">System Default(Playback Speaker)</item>
+	    <item name="outUSB_default">USB Output Device</item>
+	</string-array>
+	<string name="output_default">System Default(Playback Speaker)</string>
+	<string name="outUSB_default">USB Output Device</string>	
+	
+	
+	<string name="dialog_penelope_full_messsage_usb">Our apologies, USB Audio IO is only supported in the full version at this time.</string>
+	<string name="dialog_penelope_full_messsage_record">Our apologies, Recording is only supported in the full version at this time.</string>
+	<string name="dialog_penelope_full_messsage_capture">Our apologies, Recording is only supported in the full version. A work around may be to use a third party screen capture app.</string>
+	<string name="dialog_button_next_time">Next Time</string>
+	<string name="dialog_button_more_info">More Info</string>
+	
+	
+	<string name="dialog_restart_simulation">You must restart simulation for this change to take effect.</string>
+	<string name="dialog_button_ok">OK</string> 
+	
+	<string name="dialog_welcome_to_penelope">Welcom to Penelope.</string>
+	<string name="dialog_button_enjoy">Enjoy!</string>
+	<string name="enable_reverb">Enable Reverb</string>
+	<string name="inver_audio_summary">Reverse phase of output audio. May help reduce feedback.</string> 
+	
+</resources>

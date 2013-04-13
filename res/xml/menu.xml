@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/options_menu_item_record"
+          android:title="@string/option_record"
+          android:icon="@drawable/ic_action_settings" 
+          android:showAsAction="withText"/>
+    <item android:id="@+id/options_menu_item"
+          android:title="@string/options"
+          android:icon="@drawable/ic_action_settings" 
+          android:showAsAction="withText">
+		<!-- <menu android:id="@+id/settings_menu">
+		    <item
+		        android:id="@+id/devices_menu_item" 
+                android:title="@string/devices"
+                android:icon="@drawable/device_access_usb" 
+                android:showAsAction="ifRoom|withText"/>
+		    <item
+		        android:id="@+id/visualizations_menu_item"
+                android:title="@string/visualizations"
+                android:icon="@drawable/device_access_video" 
+                android:showAsAction="ifRoom|withText"/>
+		    <item
+		        android:id="@+id/addons_menu_item"
+                android:title="@string/addons"
+                android:icon="@drawable/collections_cloud" 
+                android:showAsAction="ifRoom|withText"/>
+		</menu> -->   
+	</item>     
+	    <item android:id="@+id/options_menu_item_help"
+          android:title="@string/option_help"
+          android:icon="@drawable/ic_action_settings" 
+          android:showAsAction="withText"/>
+</menu>

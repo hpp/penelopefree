@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen  xmlns:android="http://schemas.android.com/apk/res/android"
+    android:title="@string/options">
+    <!-- opens a subscreen of settings -->
+    <PreferenceCategory 
+        android:title="@string/devices"
+        android:key="devices_category_key">
+        <ListPreference
+	    	android:key="input_device_key"
+	        android:title="@string/input_device"
+	        android:entries="@array/input_devices_entries"
+	        android:entryValues="@array/input_devices_keys"
+	        android:defaultValue="@string/input_default"/>
+	    <ListPreference
+	        android:key="output_device_key"
+	        android:title="@string/output_device"
+	        android:entries="@array/output_devices_entries"
+	        android:entryValues="@array/output_devices_keys"
+	        android:defaultValue="@string/output_default"/>/>
+    </PreferenceCategory>
+    
+	<PreferenceCategory 
+        android:key="@string/visualizations_category_key"
+        android:title="@string/visualizations">
+	    <com.harmonicprocesses.penelopefree.settings.SeekBarPreference
+		    android:key="vis_number_of_particles_key"
+	    	android:title="@string/number_of_particles"
+	    	android:summary="How many particles included in simulation"
+	    	android:dialogMessage="Number of particles."
+	    	android:defaultValue="6000"
+	    	android:text="particles"
+	    	android:max="100000"/>
+	</PreferenceCategory>
+	
+	<PreferenceCategory 
+    	android:key="sound_category_key"
+        android:title="@string/sound_category">
+        <CheckBoxPreference
+            android:key="invert_audio_key"
+            android:summary="@string/inver_audio_summary"
+            android:title="@string/invert_phase"
+            android:defaultValue="false"/>
+        <CheckBoxPreference
+            android:key="enable_reverb_key"
+            android:title="@string/enable_reverb"
+            android:defaultValue="false"/>
+    </PreferenceCategory>
+	
+    <PreferenceCategory 
+    	android:key="performance_options_category_key"
+        android:title="@string/performance_options_category"
+        android:summary="Turn off unused features to help boost performance">
+    	<CheckBoxPreference
+            android:key="turn_on_visualization_key"
+            android:title="@string/visualization"
+            android:defaultValue="true"/>
+        <CheckBoxPreference
+            android:key="turn_on_accelerometer_key"
+            android:title="@string/accelerometer"
+            android:defaultValue="true"/>
+        <CheckBoxPreference
+            android:key="turn_on_output_audio_key"
+            android:title="@string/output_audio"
+            android:defaultValue="true"/>
+    </PreferenceCategory>
+
+<!-- 
+    <PreferenceScreen
+        android:key="@string"
+        android:title="@string/devices"
+        android:persistent="false"
+        android:icon="@drawable/device_access_usb"
+        android:fragment="com.harmonicprocesses.penelopefree.settings.DevicesFragment"/>
+         <ListPreference
+            android:key="input_device_key"
+            android:title="@string/input_device"/>
+        <PreferenceScreen
+            android:key="output_device_key"
+            android:title="@string/output_device"
+            android:persistent="true">
+        </PreferenceScreen>
+    </PreferenceScreen> 
+    <PreferenceScreen
+    	android:key="@string/visualizations_category_key"
+        android:title="@string/visualizations"
+        android:persistent="false"
+        android:icon="@drawable/device_access_video"
+        android:fragment="com.harmonicprocesses.penelopefree.settings.DevicesFragment"/>
+	<PreferenceScreen
+    	android:key="@string/addons_category_key"
+        android:title="@string/addons"
+        android:persistent="false"
+        android:icon="@drawable/collections_cloud"
+        android:fragment="com.harmonicprocesses.penelopefree.settings.DevicesFragment"/> 
+-->	
+</PreferenceScreen>

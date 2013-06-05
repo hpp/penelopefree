@@ -1,0 +1,84 @@
+<resources>
+
+    <string name="app_name">"佩内洛普"</string>
+    <string name="OnAirTrue">"在空气"</string>
+    <string name="OnAirFalse">"待机"</string>
+    <string name="record_button">"记录"</string>
+	<string name="devices">"设备"</string>
+	<string name="input_device">"输入设备"</string> 
+	<string name="output_device">"输出设备"</string>
+	<string name="visualizations">"可视化"</string>
+	<string name="particle_diffusion">"颗粒类型"</string>
+	<string name="addons">"插件"</string>
+	<string name="report_problem">"报告问题"</string>
+	<string name="shapes">"shapes"</string>
+	<string name="open_account">"开设账户"</string>
+	<string name="options">"设置"</string>
+	<string name="tutorial">"教程"</string>
+	<string name="about">"介绍"</string>
+	<string name="option_record">"记录。"</string>
+	<string name="option_help">"帮助"</string>
+	<string name="blank">""</string>
+	<string name="performance_options_category">"性能选项"</string>
+	<string name="sound_category">"音频"</string>
+	<string name="invert_phase">"反转阶段"</string>
+	<string name="visualization">"可视化"</string>
+	<string name="accelerometer">"    // 加速度计"</string>
+	<string name="output_audio">"输出音频"</string>
+	<string name="touch_screen">"随处触摸"</string>
+	<string name="go_onair">"去在空气公司"</string>
+	
+	<string-array name="input_devices_entries">
+	    <item name="input_default">"系统默认（内置麦克风）"</item>
+	    <item name="inUSB_default">"USB输入设备"</item>
+	</string-array>
+	<string-array name="input_devices_keys">
+	    <item name="input_default">"系统默认（内置麦克风）"</item>
+	    <item name="inUSB_default">"USB输入设备"</item>
+	</string-array>
+	<string name="input_default">"系统默认（内置麦克风）"</string>
+	<string name="inUSB_default">"USB输入设备"</string>
+	
+	<string-array name="output_devices_entries">
+	    <item name="output_default">"系统默认（扬声器播放）"</item>
+	    <item name="outUSB_default">"USB输出设备"</item>
+	</string-array>
+		<string-array name="output_devices_keys">
+	    <item name="output_default">"系统默认（扬声器播放）"</item>
+	    <item name="outUSB_default">"USB输出设备"</item>
+	</string-array>
+	<string name="output_default">"系统默认（扬声器播放）"</string>
+	<string name="outUSB_default">"USB输出设备"</string>	
+	
+	
+	<string name="dialog_penelope_full_messsage_usb">"我们的道歉，只支持USB音频IO完整的版本在这个时候。"</string>
+	<string name="dialog_penelope_full_messsage_record">"我们的歉意，录音只支持完整的版本在这个时候。"</string>
+	<string name="dialog_penelope_full_messsage_capture">"我们的道歉，录音仅在完整版的支持。一个解决办法可能是使用第三方的屏幕捕捉应用程序。"</string>
+	<string name="dialog_button_next_time">"下回我们的研究要更进一步，"</string>
+	<string name="dialog_button_more_info">"更多信息"</string>
+	
+	
+	<string name="dialog_restart_simulation">"模拟这种变化，你必须重新启动才能生效。"</string>
+	<string name="dialog_button_ok">"确定"</string> 
+	
+	<string name="dialog_welcome_to_penelope">"欢迎佩内洛普。"</string>
+	<string name="dialog_button_enjoy">"享用"</string>
+	<string name="enable_reverb">"启用混响"</string>
+	<string name="inver_audio_summary">"反相输出音频。可能有助于减少反馈。"</string> 
+	
+	<string name="number_of_particles">"颗粒数"</string>
+	<string name="number_of_particles_summary">"多少颗粒包含在仿真"</string>
+	<string name="number_of_particles_dialog">"的粒子数​​。"</string>
+	<string name="number_of_particles_text">"碎木料"</string>
+	
+	<string name="wet_dry_ratio">"干比湿："</string>
+	<string name="wet_dry_ratio_summary">"湿到干的比率。"</string>
+	<string name="wet_dry_ratio_dialog">"干比湿（处理过的声音）（直传球直通）。"</string>
+	<string name="wet_dry_ratio_text">"湿"</string>
+	
+	<string name="buff_size_int">"音频缓冲区大小"</string>
+	<string name="buff_size_int_summary">"音频缓存器的大小，增加清理的音频"</string>
+	<string name="buff_size_int_dialog">"音频缓冲区的大小，增加音频清理，减少，以减少延​​迟。三星S3的目标是2。"</string>
+	<string name="buff_size_int_text">"音频缓冲区大小"</string>
+	
+</resources>

@@ -1,0 +1,84 @@
+<resources>
+
+    <string name="app_name">"Penelopa"</string>
+    <string name="OnAirTrue">"W powietrzu"</string>
+    <string name="OnAirFalse">"Rezerwowy"</string>
+    <string name="record_button">"Rejestr"</string>
+	<string name="devices">"Urządzenia"</string>
+	<string name="input_device">"Urządzenie wejściowe"</string> 
+	<string name="output_device">"Urządzenie wyjściowe "</string>
+	<string name="visualizations">"Wizualizacje"</string>
+	<string name="particle_diffusion">"Rodzaj cząstek"</string>
+	<string name="addons">"Dodatki"</string>
+	<string name="report_problem">"Zgłosić problem"</string>
+	<string name="shapes">"Kształty"</string>
+	<string name="open_account">"Otwórz rachunek"</string>
+	<string name="options">"ustawień zostaną ponownie załadowane wartości fabryczne."</string>
+	<string name="tutorial">"Samouczek"</string>
+	<string name="about">"O NIM"</string>
+	<string name="option_record">"Dokumentacja"</string>
+	<string name="option_help">"Pomoc"</string>
+	<string name="blank">""</string>
+	<string name="performance_options_category">"Opcje działania"</string>
+	<string name="sound_category">"Audio"</string>
+	<string name="invert_phase">"Odwracać fazę"</string>
+	<string name="visualization">"Wizualizacja"</string>
+	<string name="accelerometer">"Akcelerometr"</string>
+	<string name="output_audio">"Wyjście Audio "</string>
+	<string name="touch_screen">"Dotknij Anywhere"</string>
+	<string name="go_onair">"Idź W Powietrzu"</string>
+	
+	<string-array name="input_devices_entries">
+	    <item name="input_default">"Domyślne ustawienia systemu (Mikrofon wewnętrzny) "</item>
+	    <item name="inUSB_default">"Urządzenie wejściowe USB"</item>
+	</string-array>
+	<string-array name="input_devices_keys">
+	    <item name="input_default">"Domyślne ustawienia systemu (Mikrofon wewnętrzny) "</item>
+	    <item name="inUSB_default">"Urządzenie wejściowe USB"</item>
+	</string-array>
+	<string name="input_default">"Domyślne ustawienia systemu (Mikrofon wewnętrzny) "</string>
+	<string name="inUSB_default">"Urządzenie wejściowe USB"</string>
+	
+	<string-array name="output_devices_entries">
+	    <item name="output_default">"Domyślne ustawienia systemu (Odtwarzanie Głośnik) "</item>
+	    <item name="outUSB_default">"Wyjście USB Device"</item>
+	</string-array>
+		<string-array name="output_devices_keys">
+	    <item name="output_default">"Domyślne ustawienia systemu (Odtwarzanie Głośnik)"</item>
+	    <item name="outUSB_default">"Wyjście USB Device"</item>
+	</string-array>
+	<string name="output_default">"Domyślne ustawienia systemu (Odtwarzanie Głośnik) "</string>
+	<string name="outUSB_default">"Wyjście USB Device"</string>	
+	
+	
+	<string name="dialog_penelope_full_messsage_usb">"Nasze przeprosiny, USB Audio IO jest obsługiwany tylko w pełnej wersji programu w tej chwili."</string>
+	<string name="dialog_penelope_full_messsage_record">"Nasze przeprosiny, Nagrywanie jest obsługiwana tylko w pełnej wersji programu w tej chwili."</string>
+	<string name="dialog_penelope_full_messsage_capture">"Nasze przeprosiny, Nagrywanie jest obsługiwana tylko w pełnej wersji. Prace wokół może być użycie trzeciego ekranu strony aplikacji przechwytywania."</string>
+	<string name="dialog_button_next_time">"Następnym razem"</string>
+	<string name="dialog_button_more_info">"Więcej inform"</string>
+	
+	
+	<string name="dialog_restart_simulation">"Musisz ponownie uruchomić symulację, aby zmiany zaczęły obowiązywać."</string>
+	<string name="dialog_button_ok">"Działa prawidłowo "</string> 
+	
+	<string name="dialog_welcome_to_penelope">"Zapraszamy do Penelopy."</string>
+	<string name="dialog_button_enjoy">"radujmy się!"</string>
+	<string name="enable_reverb">"Włącz Reverb"</string>
+	<string name="inver_audio_summary">"Odwróć fazę wyjścia audio. Może pomóc zmniejszyć zwrotne."</string> 
+	
+	<string name="number_of_particles">"Liczba cząstek"</string>
+	<string name="number_of_particles_summary">"Ile cząstki zawarte w symulacji"</string>
+	<string name="number_of_particles_dialog">"Ilość cząstek."</string>
+	<string name="number_of_particles_text">"cząstki"</string>
+	
+	<string name="wet_dry_ratio">"Stosunek Mokre do suchych "</string>
+	<string name="wet_dry_ratio_summary">"Stosunek z mokrego na suchy."</string>
+	<string name="wet_dry_ratio_dialog">"Stosunek mokrego (przetworzonych dźwięków) do sucha (prosty przebieg thru)."</string>
+	<string name="wet_dry_ratio_text">"% mokrego"</string>
+	
+	<string name="buff_size_int">"Rozmiar bufora audio"</string>
+	<string name="buff_size_int_summary">"Rozmiar bufora audio, zwiększyć do czyszczenia dźwięku"</string>
+	<string name="buff_size_int_dialog">"Rozmiar bufora audio, zwiększyć do czyszczenia dźwięku, zmniejszyć zmniejszyć opóźnienia. Cel Samsung S3 jest 2."</string>
+	<string name="buff_size_int_text">"Rozmiar bufora audio"</string>
+	
+</resources>

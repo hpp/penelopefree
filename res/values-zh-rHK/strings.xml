@@ -1,0 +1,84 @@
+<resources>
+
+    <string name="app_name">"佩內​​洛普"</string>
+    <string name="OnAirTrue">"在空氣"</string>
+    <string name="OnAirFalse">"待機。"</string>
+    <string name="record_button">"記錄"</string>
+	<string name="devices">"裝置"</string>
+	<string name="input_device">"輸入設備"</string> 
+	<string name="output_device">"輸出設備"</string>
+	<string name="visualizations">"可視化"</string>
+	<string name="particle_diffusion">"顆粒類型"</string>
+	<string name="addons">"附加組件"</string>
+	<string name="report_problem">"報告問題"</string>
+	<string name="shapes">"型"</string>
+	<string name="open_account">"開設賬戶"</string>
+	<string name="options">"設置"</string>
+	<string name="tutorial">"導讀"</string>
+	<string name="about">"律師事務所簡介"</string>
+	<string name="option_record">"記錄"</string>
+	<string name="option_help">"幫助"</string>
+	<string name="blank">""</string>
+	<string name="performance_options_category">"性能選項"</string>
+	<string name="sound_category">"音樂"</string>
+	<string name="invert_phase">"反轉階段"</string>
+	<string name="visualization">"可視化"</string>
+	<string name="accelerometer">"加速器"</string>
+	<string name="output_audio">"輸出音頻"</string>
+	<string name="touch_screen">"隨處觸摸"</string>
+	<string name="go_onair">"去在空氣公司"</string>
+	
+	<string-array name="input_devices_entries">
+	    <item name="input_default">"系統默認（內置麥克風）"</item>
+	    <item name="inUSB_default">"USB輸入設備"</item>
+	</string-array>
+	<string-array name="input_devices_keys">
+	    <item name="input_default">"系統默認（內置麥克風）"</item>
+	    <item name="inUSB_default">"USB輸入設備"</item>
+	</string-array>
+	<string name="input_default">"系統默認（內置麥克風）"</string>
+	<string name="inUSB_default">"USB輸入設備"</string>
+	
+	<string-array name="output_devices_entries">
+	    <item name="output_default">"系統默認（揚聲器播放）"</item>
+	    <item name="outUSB_default">"USB輸出設備"</item>
+	</string-array>
+		<string-array name="output_devices_keys">
+	    <item name="output_default">"系統默認（揚聲器播放）"</item>
+	    <item name="outUSB_default">"USB輸出設備"</item>
+	</string-array>
+	<string name="output_default">"系統默認（揚聲器播放）"</string>
+	<string name="outUSB_default">"USB輸出設備"</string>	
+	
+	
+	<string name="dialog_penelope_full_messsage_usb">"我們的道歉，只支持USB音頻IO完整的版本在這個時候。"</string>
+	<string name="dialog_penelope_full_messsage_record">"我們的歉意，錄音只支持完整的版本在這個時候。"</string>
+	<string name="dialog_penelope_full_messsage_capture">"我們的道歉，錄音僅在完整版的支持。一個解決辦法可能是使用第三方的屏幕捕捉應用程序。"</string>
+	<string name="dialog_button_next_time">"下一次"</string>
+	<string name="dialog_button_more_info">"更多資訊"</string>
+	
+	
+	<string name="dialog_restart_simulation">"模擬這種變化，你必須重新啟動才能生效。"</string>
+	<string name="dialog_button_ok">"確定"</string> 
+	
+	<string name="dialog_welcome_to_penelope">"歡迎佩內洛普。"</string>
+	<string name="dialog_button_enjoy">"好好享受吧!"</string>
+	<string name="enable_reverb">"啟用混響"</string>
+	<string name="inver_audio_summary">"反相輸出音頻。可能有助於減少反饋。"</string> 
+	
+	<string name="number_of_particles">"顆粒數"</string>
+	<string name="number_of_particles_summary">"多少顆粒包含在仿真"</string>
+	<string name="number_of_particles_dialog">"的粒子數。"</string>
+	<string name="number_of_particles_text">"顆粒"</string>
+	
+	<string name="wet_dry_ratio">"幹比濕："</string>
+	<string name="wet_dry_ratio_summary">"濕到幹的比率。"</string>
+	<string name="wet_dry_ratio_dialog">"幹比濕（處理過的聲音）（直傳球直通）。"</string>
+	<string name="wet_dry_ratio_text">"濕。"</string>
+	
+	<string name="buff_size_int">"音頻緩衝區大小"</string>
+	<string name="buff_size_int_summary">"音頻緩存器的大小，增加清理的音頻"</string>
+	<string name="buff_size_int_dialog">"音頻緩衝區的大小，增加音頻清理，減少，以減少延遲。三星S3的目標是2。"</string>
+	<string name="buff_size_int_text">"音頻緩衝區大小"</string>
+	
+</resources>

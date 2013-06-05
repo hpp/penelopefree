@@ -175,7 +175,7 @@ public class OnAirActivity extends Activity {
 		
 		// Create instance on AudioOnAir
 		//mAudioOnAir = new AudioOnAir((Button) findViewById(R.id.dummy_button), (TextView) findViewById(R.id.fullscreen_content));
-		mGLView = new MyGLSurfaceView(this,mAudioOnAir.NoteSpectrum);
+		mGLView = new MyGLSurfaceView(this);
 	
         // Display the fragment as the main content.
         //getFragmentManager().beginTransaction()

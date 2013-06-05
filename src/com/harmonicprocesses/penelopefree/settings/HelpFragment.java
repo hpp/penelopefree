@@ -21,23 +21,21 @@ public class HelpFragment  extends PreferenceFragment {
     @Override
     public boolean onPreferenceTreeClick(PreferenceScreen prefScreen, Preference pref){
     	super.onPreferenceTreeClick(prefScreen, pref);
-    	if (pref.getKey().equals(getActivity().getResources().getString(R.string.devices_category_key))) {
+    	if (pref.getKey().contains("devices_category_key")) {
     		// Display the fragment as the main content.
     		getFragmentManager().beginTransaction().replace(R.id.settingsFragmentView, 
     				new SubSettingsFragment().setArguments(R.xml.devices))
     			.addToBackStack(null).commit();
     		getActivity().setTitle("Devices");
     		return true;
-        } else if (pref.getKey().equals(getActivity().getResources().getString(
-        		R.string.visualizations_category_key))) {
+        } else if (pref.getKey().contains("visualizations_category_key")) {
     		// Display the fragment as the main content.
     		getFragmentManager().beginTransaction().replace(R.id.settingsFragmentView, 
     				new SubSettingsFragment().setArguments(R.xml.visualizations))
     			.addToBackStack(null).commit();
     		getActivity().setTitle("Visualizations");
     		return true;
-        }  else if (pref.getKey().equals(getActivity().getResources().getString(
-        		R.string.addons_category_key))) {
+        }  else if (pref.getKey().contains("addons_category_key")) {
     		// Display the fragment as the main content.
     		getFragmentManager().beginTransaction().replace(R.id.settingsFragmentView, 
     				new SubSettingsFragment().setArguments(R.xml.addons))

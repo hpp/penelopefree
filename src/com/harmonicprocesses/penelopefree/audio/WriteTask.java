@@ -19,12 +19,6 @@ public class WriteTask extends AsyncTask <ByteBuffer, Void, float[]>{
 		return null;
 	}
 	
-	@Override 
-	protected void onPostExecute(float[] arg0){
-	
-	
-	}
-	
 	private float[] readByteArray(byte[] tempByte) {
 		float[] output = new float[tempByte.length / (AudioOnAir.numChannels*AudioOnAir.numBytePerFrame)]; 
 		for (int i = 0; i < output.length; i++){

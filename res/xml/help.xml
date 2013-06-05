@@ -3,19 +3,19 @@
     android:title="Help">
     <Preference
         android:title="@string/tutorial"
-        android:key="@string/tutorial_key">
+        android:key="tutorial_key">
     	<intent android:action="android.intent.action.VIEW"
     	    android:data="http://mypromotank.com/hp/penelope/?page_id=16" />
     </Preference>
     <Preference 
         android:title="@string/about"
-        android:key="@string/about_key">
+        android:key="about_key">
         <intent android:action="android.intent.action.VIEW"
         	android:data="http://mypromotank.com/hp/penelope" />
     </Preference>
 	<Preference
         android:title="@string/report_problem"
-        android:key="@string/report_problem_key">
+        android:key="report_problem_key">
     	<intent android:action="android.intent.action.VIEW"
         	android:data="http://mypromotank.com/hp/penelope/?page_id=10" />
     </Preference>    

@@ -16,7 +16,7 @@
 
 /*
  * This file is auto-generated. DO NOT MODIFY!
- * The source Renderscript file: /media/5b317046-147a-42ee-aec1-f73caf1922c5/home/kloud9/WorkSpace2/PenelopeMainActivity/src/com/harmonicprocesses/penelopefree/renderscript/particleFilter.rs
+ * The source Renderscript file: /media/5b317046-147a-42ee-aec1-f73caf1922c5/home/kloud9/WorkSpace/PenelopeMainActivity/src/com/harmonicprocesses/penelopefree/renderscript/particleFilter.rs
  */
 package com.harmonicprocesses.penelopefree.renderscript;
 

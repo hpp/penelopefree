@@ -45,7 +45,7 @@ public class Square {
     private final int vertexStride = COORDS_PER_VERTEX * 4; // 4 bytes per vertex
 
     // Set color with red, green, blue and alpha (opacity) values
-    //float color[] = { 0.2f, 0.709803922f, 0.898039216f, 1.0f };
+    float color[] = { 0.3f, 0.0f, 0.0f, 0.0f};
 
     public Square(float xOffset, float yOffset, float sideLen) {
     	float[] Coords = {xOffset,  		yOffset+sideLen, 	0.0f,   // top left
@@ -84,7 +84,7 @@ public class Square {
     }
 
     public void draw(float[] mvpMatrix, float Alpha) {
-    	float color[] = { 0.3f, Alpha, 0.0f, 0.0f};
+    	color[1] = Alpha;
     	
     	//	Add program to OpenGL environment
         GLES20.glUseProgram(mProgram);

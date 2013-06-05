@@ -1,0 +1,85 @@
+<resources>
+
+    <string name="app_name">"ペネロペ"</string>
+    <string name="OnAirTrue">"オンエア"</string>
+    <string name="OnAirFalse">"スタンバイ"</string>
+    <string name="record_button">"記録"</string>
+	<string name="devices">"デバイス"</string>
+	<string name="input_device">"入力装置"</string> 
+	<string name="output_device">"出力デバ​​イス"</string>
+	<string name="visualizations">"視覚"</string>
+	<string name="particle_diffusion">"粒子の種類"</string>
+	<string name="addons">"アドオン"</string>
+	<string name="report_problem">"問題の報告"</string>
+	<string name="shapes">"Shapes"</string>
+	<string name="open_account">"アカウントを開く"</string>
+	<string name="options">"設定"</string>
+	<string name="tutorial">"チュートリアル"</string>
+	<string name="about">"概要
+"</string>
+	<string name="option_record">"捕獲"</string>
+	<string name="option_help">"役立つ"</string>
+	<string name="blank">""</string>
+	<string name="performance_options_category">"パフォーマンスオプション"</string>
+	<string name="sound_category">"音声"</string>
+	<string name="invert_phase">"位相を反転"</string>
+	<string name="visualization">"可視化"</string>
+	<string name="accelerometer">"加速度計"</string>
+	<string name="output_audio">"出力オーディオ"</string>
+	<string name="touch_screen">"どこをタッチ"</string>
+	<string name="go_onair">"空気行く"</string>
+	
+	<string-array name="input_devices_entries">
+	    <item name="input_default">"システムデフォルト（内蔵マイク）"</item>
+	    <item name="inUSB_default">"USB入力デバイス"</item>
+	</string-array>
+	<string-array name="input_devices_keys">
+	    <item name="input_default">"システムデフォルト（内蔵マイク）"</item>
+	    <item name="inUSB_default">"USB入力デバイス"</item>
+	</string-array>
+	<string name="input_default">"システムデフォルト（内蔵マイク）"</string>
+	<string name="inUSB_default">"USB入力デバイス"</string>
+	
+	<string-array name="output_devices_entries">
+	    <item name="output_default">"システムデフォルト（再生スピーカー）"</item>
+	    <item name="outUSB_default">"USB出力デバイス"</item>
+	</string-array>
+		<string-array name="output_devices_keys">
+	    <item name="output_default">"システムデフォルト（再生スピーカー）"</item>
+	    <item name="outUSB_default">"USB出力デバイス"</item>
+	</string-array>
+	<string name="output_default">"システムデフォルト（再生スピーカー）"</string>
+	<string name="outUSB_default">"USB出力デバイス"</string>	
+	
+	
+	<string name="dialog_penelope_full_messsage_usb">"私たちの謝罪は、USBオーディオIOがこれだけ一度にフルバージョンでサポートされています。"</string>
+	<string name="dialog_penelope_full_messsage_record">"私たちの謝罪は、録音のみ現時点ではフルバージョンでサポートされています。"</string>
+	<string name="dialog_penelope_full_messsage_capture">"私たちの謝罪は、記録は唯一のフルバージョンではサポートされています。回避策は、サードパーティの画面キャプチャアプリを使用することであってもよい。"</string>
+	<string name="dialog_button_next_time">"次回"</string>
+	<string name="dialog_button_more_info">"\"詳細情報\""</string>
+	
+	
+	<string name="dialog_restart_simulation">"あなたを有効にするには、この変更のためにシミュレーションを再起動する必要があります。"</string>
+	<string name="dialog_button_ok">"わかりました"</string> 
+	
+	<string name="dialog_welcome_to_penelope">"ペネロペへようこそ。"</string>
+	<string name="dialog_button_enjoy">"是非ためしてください！"</string>
+	<string name="enable_reverb">"リバーブを有効にする"</string>
+	<string name="inver_audio_summary">"出力音声の位相を逆にします。フィードバックを減らすのを助けるかもしれない。"</string> 
+	
+	<string name="number_of_particles">"粒子の数"</string>
+	<string name="number_of_particles_summary">"どのように多くの粒子がシミュレーションに含まれる"</string>
+	<string name="number_of_particles_dialog">"粒子の数。"</string>
+	<string name="number_of_particles_text">"パーティクル"</string>
+	
+	<string name="wet_dry_ratio">"比ウェット：ドライ"</string>
+	<string name="wet_dry_ratio_summary">"乾燥するウエットの比率。"</string>
+	<string name="wet_dry_ratio_dialog">"乾燥するためにぬれたの比（加工音）（ストレートパススルー）。"</string>
+	<string name="wet_dry_ratio_text">"濡れている。"</string>
+	
+	<string name="buff_size_int">"オーディオ入出力のバッファ·サイズ"</string>
+	<string name="buff_size_int_summary">"可聴周波バッファのサイズ、オーディオをクリーンアップするために増加"</string>
+	<string name="buff_size_int_dialog">"オーディオバッファのサイズは、オーディオをクリーンアップするために増加すると、遅延を減らすために減少。サムスンS3のターゲットは2です。"</string>
+	<string name="buff_size_int_text">"オーディオ入出力のバッファ·サイズ"</string>
+	
+</resources>

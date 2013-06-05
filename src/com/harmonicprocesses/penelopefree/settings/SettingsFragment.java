@@ -43,15 +43,15 @@ public class SettingsFragment extends PreferenceFragment {
     public boolean onPreferenceTreeClick(PreferenceScreen prefScreen, Preference pref){
     	super.onPreferenceTreeClick(prefScreen, pref);
     	mKey = pref.getKey();
-    	if (mKey.equals(mRes.getString(R.string.devices_category_key))) {
+    	if (mKey.contains("devices_category_key")) {
     		// Display the fragment as the main content.
     		transact(R.xml.devices,"Devices");
     		return true;
-        } else if (mKey.equals(mRes.getString(R.string.visualizations_category_key))) {
+        } else if (mKey.contains("visualizations_category_key")) {
     		// Display the fragment as the main content.
         	transact(R.xml.visualizations, "Visualizations");
     		return true;
-        }  else if (mKey.equals(mRes.getString(R.string.addons_category_key))) {
+        }  else if (mKey.contains("addons_category_key")) {
     		// Display the fragment as the main content.
         	transact(R.xml.addons,"Add-Ons");
     		return true;
@@ -78,9 +78,11 @@ public class SettingsFragment extends PreferenceFragment {
 					sharedPreferences.getString(key, "").contains(mRes.getString(R.string.outUSB_default))){
 					new UpSaleDialog(R.string.dialog_penelope_full_messsage_usb).show(mFrag,"PaidForVersionDialog");
 				}
-			} else if (key.contains("turn_on_accelerometer_key")||key.contains("vis_number_of_particles_key")) {
+			} else if (key.contains("turn_on_accelerometer_key")||key.contains("vis_number_of_particles_key")||
+					key.contains("invert_audio_key")||key.contains("enable_reverb_key")||
+					key.contains("sound_buffer_size_key")||key.contains("sound_wet_dry_key")) {
 				new UpSaleDialog(R.string.dialog_restart_simulation, R.string.dialog_button_ok)
-					.show(mFrag,"PaidForVersionDialog");
+					.show(mFrag,"RestartSimulationDialog");
 			} 
 			
 		}

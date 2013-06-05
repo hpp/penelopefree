@@ -28,9 +28,9 @@ import com.harmonicprocesses.penelopefree.openGL.shapes.Triangle;
 import com.harmonicprocesses.penelopefree.openGL.utils.Accelmeter;
 import com.harmonicprocesses.penelopefree.openGL.utils.SoundParticle;
 import com.harmonicprocesses.penelopefree.openGL.utils.SoundParticleHexBins;
+import com.harmonicprocesses.penelopefree.settings.SettingsActivity;
 import com.harmonicprocesses.penelopefree.renderscript.ScriptC_particleFilter;
 import com.harmonicprocesses.penelopefree.renderscript.ScriptField_particle;
-import com.harmonicprocesses.penelopefree.settings.SettingsActivity;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

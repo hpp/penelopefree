@@ -20,21 +20,37 @@
     </PreferenceCategory>
     
 	<PreferenceCategory 
-        android:key="@string/visualizations_category_key"
+        android:key="visualizations_category_key"
         android:title="@string/visualizations">
 	    <com.harmonicprocesses.penelopefree.settings.SeekBarPreference
 		    android:key="vis_number_of_particles_key"
 	    	android:title="@string/number_of_particles"
-	    	android:summary="How many particles included in simulation"
-	    	android:dialogMessage="Number of particles."
+	    	android:summary="@string/number_of_particles_summary"
+	    	android:dialogMessage="@string/number_of_particles_dialog"
 	    	android:defaultValue="6000"
-	    	android:text="particles"
+	    	android:text="@string/number_of_particles_text"
 	    	android:max="100000"/>
 	</PreferenceCategory>
 	
 	<PreferenceCategory 
     	android:key="sound_category_key"
         android:title="@string/sound_category">
+	    <com.harmonicprocesses.penelopefree.settings.SeekBarPreference
+		    android:key="sound_wet_dry_key"
+	    	android:title="@string/wet_dry_ratio"
+	    	android:summary="@string/wet_dry_ratio_summary"
+	    	android:dialogMessage="@string/wet_dry_ratio_dialog"
+	    	android:defaultValue="50"
+	    	android:text="@string/wet_dry_ratio_text"
+	    	android:max="100"/>
+	    <com.harmonicprocesses.penelopefree.settings.SeekBarPreference
+		    android:key="sound_buffer_size_key"
+	    	android:title="@string/buff_size_int"
+	    	android:summary="@string/buff_size_int_summary"
+	    	android:dialogMessage="@string/buff_size_int_dialog"
+	    	android:defaultValue="2"
+	    	android:text="@string/buff_size_int_text"
+	    	android:max="8"/>
         <CheckBoxPreference
             android:key="invert_audio_key"
             android:summary="@string/inver_audio_summary"

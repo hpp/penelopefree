@@ -4,6 +4,8 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
+import com.harmonicprocesses.penelopefree.R;
+
 //import javax.microedition.khronos.egl.EGL10;
 //import javax.microedition.khronos.opengles.GL;
 

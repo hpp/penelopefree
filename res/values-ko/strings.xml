@@ -1,0 +1,84 @@
+<resources>
+
+    <string name="app_name">"페넬로페"</string>
+    <string name="OnAirTrue">"대한 항공"</string>
+    <string name="OnAirFalse">"대기"</string>
+    <string name="record_button">"기록"</string>
+	<string name="devices">"디바이스"</string>
+	<string name="input_device">"입력 장치"</string> 
+	<string name="output_device">"출력 장치"</string>
+	<string name="visualizations">"시각화"</string>
+	<string name="particle_diffusion">"입자의 종류"</string>
+	<string name="addons">"부가 기능"</string>
+	<string name="report_problem">"문제 신고하기"</string>
+	<string name="shapes">"모양"</string>
+	<string name="open_account">"계좌 개설"</string>
+	<string name="options">"설정"</string>
+	<string name="tutorial">"튜토리얼"</string>
+	<string name="about">"정보"</string>
+	<string name="option_record">"기록"</string>
+	<string name="option_help">"도움말"</string>
+	<string name="blank">""</string>
+	<string name="performance_options_category">"성능 옵션"</string>
+	<string name="sound_category">"오디오"</string>
+	<string name="invert_phase">"위상 반전"</string>
+	<string name="visualization">"시각화"</string>
+	<string name="accelerometer">"가속도계"</string>
+	<string name="output_audio">"출력 오디오"</string>
+	<string name="touch_screen">"아무 곳이나 터치"</string>
+	<string name="go_onair">"온에어 이동"</string>
+	
+	<string-array name="input_devices_entries">
+	    <item name="input_default">"시스템 기본 (내장 마이크)"</item>
+	    <item name="inUSB_default">"USB 입력 장치"</item>
+	</string-array>
+	<string-array name="input_devices_keys">
+	    <item name="input_default">"시스템 기본 (내장 마이크)"</item>
+	    <item name="inUSB_default">"USB 입력 장치"</item>
+	</string-array>
+	<string name="input_default">"시스템 기본 (내장 마이크)"</string>
+	<string name="inUSB_default">"USB 입력 장치"</string>
+	
+	<string-array name="output_devices_entries">
+	    <item name="output_default">"시스템 기본값 (재생 스피커)"</item>
+	    <item name="outUSB_default">"USB 출력 장치"</item>
+	</string-array>
+		<string-array name="output_devices_keys">
+	    <item name="output_default">"시스템 기본값 (재생 스피커)"</item>
+	    <item name="outUSB_default">"USB 출력 장치"</item>
+	</string-array>
+	<string name="output_default">"시스템 기본값 (재생 스피커)"</string>
+	<string name="outUSB_default">"USB 출력 장치"</string>	
+	
+	
+	<string name="dialog_penelope_full_messsage_usb">"우리의 사과는, USB 오디오 IO는이 시점에서 정식 버전에서 지원됩니다."</string>
+	<string name="dialog_penelope_full_messsage_record">"우리의 사과는 기록은이 시간에 정식 버전에서 지원됩니다."</string>
+	<string name="dialog_penelope_full_messsage_capture">"우리의 사과는 기록은 정식 버전에서만 지원됩니다. 이 문제가 해결 타사 화면 캡처 응용 프로그램을 사용 할 수 있습니다."</string>
+	<string name="dialog_button_next_time">"다음 시간"</string>
+	<string name="dialog_button_more_info">"추가 정보"</string>
+	
+	
+	<string name="dialog_restart_simulation">"당신은이 변경 사항을 적용하려면 시뮬레이션을 다시 시작해야합니다."</string>
+	<string name="dialog_button_ok">"확인"</string> 
+	
+	<string name="dialog_welcome_to_penelope">"페넬로페에 오신 것을 환영합니다."</string>
+	<string name="dialog_button_enjoy">"즐거운 시간을 보내세요!"</string>
+	<string name="enable_reverb">"리버브를 사용"</string>
+	<string name="inver_audio_summary">"출력 오디오의 위상을 역으로 수행합니다. 의견을 줄이는 데 도움이 될 수 있습니다."</string> 
+	
+	<string name="number_of_particles">"입자의 수"</string>
+	<string name="number_of_particles_summary">"얼마나 많은 입자 시뮬레이션에 포함"</string>
+	<string name="number_of_particles_dialog">"입자의 수​​."</string>
+	<string name="number_of_particles_text">"입자"</string>
+	
+	<string name="wet_dry_ratio">"건조 : 젖은 비율"</string>
+	<string name="wet_dry_ratio_summary">"건조 젖은 비율입니다."</string>
+	<string name="wet_dry_ratio_dialog">"건조에 젖은 비율 (처리 음) (직선 패스를 통해)."</string>
+	<string name="wet_dry_ratio_text">"\"젖었습니다.\""</string>
+	
+	<string name="buff_size_int">"오디오 버퍼 크기"</string>
+	<string name="buff_size_int_summary">"오디오 버퍼의 크기, 오디오를 정리하는 증가"</string>
+	<string name="buff_size_int_dialog">"오디오 버퍼의 크기, 오디오를 정리하기 위해 증가, 지연을 줄일 수 감소. 삼성 S3의 대상은 2입니다."</string>
+	<string name="buff_size_int_text">"오디오 버퍼 크기"</string>
+	
+</resources>

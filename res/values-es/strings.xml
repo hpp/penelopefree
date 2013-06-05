@@ -1,0 +1,84 @@
+<resources>
+
+    <string name="app_name">"Penélope"</string>
+    <string name="OnAirTrue">"En El Aire"</string>
+    <string name="OnAirFalse">"En Espera"</string>
+    <string name="record_button">"Registro"</string>
+	<string name="devices">"Dispositivos"</string>
+	<string name="input_device">"Dispositivo de entrada"</string> 
+	<string name="output_device">"Dispositivo de salida"</string>
+	<string name="visualizations">"Visualizaciones"</string>
+	<string name="particle_diffusion">"Tipo de Partículas"</string>
+	<string name="addons">"Adiciones "</string>
+	<string name="report_problem">"Notificar un problema"</string>
+	<string name="shapes">"Figuras"</string>
+	<string name="open_account">"Abrir una cuenta"</string>
+	<string name="options">"Configuración"</string>
+	<string name="tutorial">"Tutorial"</string>
+	<string name="about">"SOBRE"</string>
+	<string name="option_record">"registro"</string>
+	<string name="option_help">"Ayudar"</string>
+	<string name="blank">""</string>
+	<string name="performance_options_category">"Opciones de rendimiento"</string>
+	<string name="sound_category">"Audio"</string>
+	<string name="invert_phase">"Invertir fase"</string>
+	<string name="visualization">"Visualización"</string>
+	<string name="accelerometer">"Acelerómetro"</string>
+	<string name="output_audio">"Salida de Audio"</string>
+	<string name="touch_screen">"Toque en cualquier lugar"</string>
+	<string name="go_onair">"Ir OnAir"</string>
+	
+	<string-array name="input_devices_entries">
+	    <item name="input_default">"Defecto del sistema (micrófono interno)"</item>
+	    <item name="inUSB_default">"Dispositivo de entrada USB"</item>
+	</string-array>
+	<string-array name="input_devices_keys">
+	    <item name="input_default">"Defecto del sistema (micrófono interno)"</item>
+	    <item name="inUSB_default">"Dispositivo de entrada USB"</item>
+	</string-array>
+	<string name="input_default">"Defecto del sistema (micrófono interno)"</string>
+	<string name="inUSB_default">"Dispositivo de entrada USB"</string>
+	
+	<string-array name="output_devices_entries">
+	    <item name="output_default">"Sistema estándar (Reproducción Speaker)"</item>
+	    <item name="outUSB_default">"Dispositivo de salida USB"</item>
+	</string-array>
+		<string-array name="output_devices_keys">
+	    <item name="output_default">"Sistema estándar (Reproducción Speaker)"</item>
+	    <item name="outUSB_default">"Dispositivo de salida USB"</item>
+	</string-array>
+	<string name="output_default">"Sistema estándar (Reproducción Speaker)"</string>
+	<string name="outUSB_default">"Dispositivo de salida USB"</string>	
+	
+	
+	<string name="dialog_penelope_full_messsage_usb">"Nuestras disculpas, USB Audio IO sólo se admite en la versión completa en este momento."</string>
+	<string name="dialog_penelope_full_messsage_record">"Nuestras disculpas, grabación sólo se admite en la versión completa en este momento."</string>
+	<string name="dialog_penelope_full_messsage_capture">"Nuestras disculpas, grabación sólo se admite en la versión completa. Un trabajo alrededor puede ser el uso de una tercera aplicación de captura de pantalla del partido."</string>
+	<string name="dialog_button_next_time">"La próxima?"</string>
+	<string name="dialog_button_more_info">"Más información"</string>
+	
+	
+	<string name="dialog_restart_simulation">"Debe reiniciar la simulación para que este cambio surta efecto."</string>
+	<string name="dialog_button_ok">"bueno"</string> 
+	
+	<string name="dialog_welcome_to_penelope">"Bienvenido a Penélope."</string>
+	<string name="dialog_button_enjoy">"¡Disfrútenlo!"</string>
+	<string name="enable_reverb">"Habilitar Reverb"</string>
+	<string name="inver_audio_summary">"Fase de salida de audio inversa. Puede ayudar a reducir la retroalimentación."</string> 
+	
+	<string name="number_of_particles">"Número de partículas"</string>
+	<string name="number_of_particles_summary">"¿Cuántas partículas incluido en la simulación"</string>
+	<string name="number_of_particles_dialog">"Número de partículas."</string>
+	<string name="number_of_particles_text">"partículas"</string>
+	
+	<string name="wet_dry_ratio">"Ratio Húmedo a Seco"</string>
+	<string name="wet_dry_ratio_summary">"Relación de húmedo a seco."</string>
+	<string name="wet_dry_ratio_dialog">"Relación entre la húmeda (sonido procesado) para seco (paso directo recta)."</string>
+	<string name="wet_dry_ratio_text">"% Húmeda"</string>
+	
+	<string name="buff_size_int">"Tamaño de Búfer Audio"</string>
+	<string name="buff_size_int_summary">"Tamaño de búfer audio, aumentar para limpiar audio"</string>
+	<string name="buff_size_int_dialog">"Tamaño del búfer de audio, aumentar para limpiar audio, disminuirá a reducir los retrasos. Meta para el Samsung S3 es 2."</string>
+	<string name="buff_size_int_text">"Tamaño de Búfer Audio"</string>
+	
+</resources>

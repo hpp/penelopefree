@@ -79,7 +79,7 @@ public class AudioOnAir {
 	private DSPEngine dsp;
 	private  Modal mModal;
 	private OnAir mOnAir;
-	public int[] NoteSpectrum;
+	public static int[] NoteSpectrum;
 	private SharedPreferences mSharedPref;
 	private UsbAudioManager mUsbAudioManager;
 		
@@ -158,9 +158,9 @@ public class AudioOnAir {
 	};
 	
 	public void Toggle(MyGLSurfaceView gLView) {
-		tempStringHolder = onAirButton.getText();
-		onAirButton.setText(backgroundText.getText());
-		backgroundText.setText(tempStringHolder);
+		//tempStringHolder = onAirButton.getText();
+		//onAirButton.setText(backgroundText.getText());
+		//backgroundText.setText(tempStringHolder);
 		mGLView = gLView;
 		
 		//backgroundText.setContent(mGLView);
@@ -265,7 +265,6 @@ public class AudioOnAir {
 	}
 	
 	private void readByteArray(byte[] tempByte) {
-		// TODO Auto-generated method stub
 		for (int i = 0; i < tempByte.length / (numRecChannels*numBytePerFrame); i++){
 			if (numRecChannels == 1){
 				short tempShort = (short) ((tempByte[2*i+1]<<8) + tempByte[2*i]); 

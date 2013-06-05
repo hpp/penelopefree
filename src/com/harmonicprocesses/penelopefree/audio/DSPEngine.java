@@ -17,16 +17,19 @@ public class DSPEngine {
 	public int[] noteFactor;
 	private final int real = 0, twidIdx = 0;
 	private final int imag = 1, jIdx = 1;
-	private float[] spectrum, freqSpec, imagSpectrum, realSpectrum;
+	private float[] spectrum;
+	private float[] freqSpec;
+	private float[] imagSpectrum;
+	private float[] realSpectrum;
 	private int[] ladderIndex= {0,0,0,0,0,0,0,0}, partNoteFFTIndex;
-	private int bufferSize, numCoeffs = 3, numFilters = 96;
-	private int sampleFreq;
+	public final static int numCoeffs = 3, numFilters = 96;
+	private int sampleFreq, bufferSize;
 	private int[][] twiddleIdx = new int[12*8][2];
 	private int[][] phaseCirBuffer;
 	private float[] bCoeffs = {0.2928932188134524f, 0.5857864376269047f, 0.2928932188134524f};
 	private float[] aCoeffs = {1.0f, -1.387778780781446e-16f, 0.1715728752538099f};
 	private double[][] coeffsA, coeffsB, filterPad;
-	private float[] oldSamples;
+	private double[] oldSamples;
 	private Context mContext;
 	
 	
@@ -34,19 +37,29 @@ public class DSPEngine {
 		mContext = context;
 		sampleFreq = sampleRate;
 		bufferSize = BufferSize;
-		detLadder = avgLadder = new float[8][bufferSize*2];
-		sampleCirBuffer = new float[bufferSize][8];
-		phaseCirBuffer= new int[96][bufferSize];
-		realSpectrum = imagSpectrum = new float[96];
-		twiddleFactor = calcTwiddleeDees(bufferSize);
-		noteFactor = calcNoteBins(bufferSize, sampleRate); // set freqSpec in caclNoteBins
+		setBufferSize(BufferSize);
 		spectrum = new float[96]; //base on 12 notes per 8 octaves
 		partNoteFFTIndex = new int[8];
 		lastLPSample = new float[8][4];
 		coeffsA = readCoeffFile(R.raw.coeffs_a_36);
 		coeffsB = readCoeffFile(R.raw.coeffs_b_36);
 		filterPad = new double[numFilters][numCoeffs];
-		oldSamples = new float[numCoeffs];
+		oldSamples = new double[numCoeffs];
+		
+		
+	}
+	
+	public void setBufferSize(int BufferSize){
+		bufferSize = BufferSize;
+		detLadder = avgLadder = new float[8][bufferSize*2];
+		sampleCirBuffer = new float[bufferSize][8];
+		phaseCirBuffer= new int[96][bufferSize];
+		realSpectrum = imagSpectrum = new float[96];
+		twiddleFactor = calcTwiddleeDees(bufferSize);
+		noteFactor = calcNoteBins(bufferSize, sampleFreq); // set freqSpec in caclNoteBins
+
+		output = new float[numFilters];
+		input = new double[bufferSize];
 	}
 	
 	public float[] newSamples(float[] samples, int mode) throws Exception{
@@ -316,7 +329,52 @@ public class DSPEngine {
 	 * @param bufferSize
 	 * @return
 	 */
-	private int[] calcNoteBins(int bufferSize, float sampleFreq) {
+	public static int[] staticCalcNoteBins(int bufferSize, float sampleFreq) {
+		// start at 440
+		float aNote = 440;
+		//create bins
+		float lowNote = (float) (((bufferSize/4.0)+1.0)*(sampleFreq/bufferSize));
+		float highNote = (float) ((bufferSize/2.0)*(sampleFreq/bufferSize));
+		while (!(aNote<=highNote & aNote>=lowNote)){
+			if (aNote<=lowNote){
+				aNote*=2;
+			}else if (aNote>=highNote){
+				aNote/=2;
+			}
+		}
+		aNote = (float) (aNote * Math.pow(2,-1/24));//shift to base of A
+		int chromaticNumber = 0; //number associated with note starting A = 0, Ab=11
+		//now aNote is in the right octave so scale down then up
+		while (aNote>=lowNote){
+			if (chromaticNumber <= 0) {chromaticNumber = 12;}
+			chromaticNumber--;
+			double temp = Math.pow(2,-1.0/12.0);
+			aNote = (float) (aNote * temp);
+		}
+		
+		int[] noteBins = new int[bufferSize];
+		for (int i = (bufferSize/4)+1; i<=bufferSize>>1; i++){
+			if (i*(sampleFreq/bufferSize)>=aNote){
+				aNote*=(float) Math.pow(2,1/12); //increment up
+				chromaticNumber++;
+				if (chromaticNumber >= 12) {chromaticNumber = 0;}
+				
+			}
+			noteBins[i]=chromaticNumber;
+		}
+		
+		return noteBins;
+	}
+	
+	/**
+	 * Calculate which samples go to which note.
+	 * enumerate 1 through 12 Gb to F, 
+	 * samples bufferSize/4+1 to bufferSize/2 
+	 * 
+	 * @param bufferSize
+	 * @return
+	 */
+	public int[] calcNoteBins(int bufferSize, float sampleFreq) {
 		// start at 440
 		float aNote = 440;
 		//create bins
@@ -346,7 +404,6 @@ public class DSPEngine {
 		for (int i = 1; i < 96; i++){
 			freqSpec[i] = (float) (freqSpec[i-1] * Math.pow(2.0,1.0/12.0));
 		}
-		
 		
 		int[] noteBins = new int[bufferSize];
 		for (int i = (bufferSize/4)+1; i<=bufferSize>>1; i++){
@@ -441,6 +498,8 @@ public class DSPEngine {
 		return output;
 	}
 
+	float[] output;
+	double[] input;
 	/**
 	 * takes an array of time domain samples runs them through
 	 *  96 band pass filters (one per note, twelve notes per octave)
@@ -448,13 +507,17 @@ public class DSPEngine {
 	 *  
 	 * @param samples
 	 * @return amplitudes
+	 * @throws Exception 
 	 */
-	public float[] filterSamples(float[] samples) {
-		float[] output = new float[numFilters];
-		double[] input = new double[samples.length];
+	public float[] filterSamples(float[] samples) throws Exception {
+		if (samples.length!=input.length){
+			input = new double[samples.length];
+			//throw new Exception("set length of buffer not equal to incoming data size");
+		}
 		for (int i=0;i<samples.length;i++){
 			input[i] = samples[i];
 		}
+		samples = null; //GC
 		
 		//filter buffered samples
 		for (int i = 24; i < 72; i++){
@@ -463,12 +526,16 @@ public class DSPEngine {
 		
 		//store off old samples for next pass
 		for (int j = 0; j<numCoeffs; j++){
-			oldSamples[j] = samples[samples.length-j-1]; 
+			oldSamples[j] = input[input.length-j-1]; 
 		}
 		
 		return output;
 	}
-
+	
+	//remove allocations
+	float maxAmplitude; 
+	int l; 
+	double[] temp;
 	/**
 	 * Filters a samples stream and returns the largest amplitude based
 	 * 
@@ -481,8 +548,8 @@ public class DSPEngine {
 	 * @return amplitude of the filter
 	 */
 	private float filter(double[] samples, double[] b, double[] a, int k) {
-		float maxAmplitude = 0;
-		int l = b.length; 
+		maxAmplitude = 0;
+		l = b.length; 
 		
 		//initiallize filter (zero pad) or continue from stored, or "padded", values
 		for (int i = 0; i < l; i ++){
@@ -531,7 +598,7 @@ public class DSPEngine {
 		}
 		
 		// reset filterPad to 0 index
-		double[] temp = new double[l];
+		if (temp == null){	temp = new double[l];}
 		for (int i = 0; i < l; i++){
 			temp[i] = filterPad[k][(samples.length+i)%l];
 		}

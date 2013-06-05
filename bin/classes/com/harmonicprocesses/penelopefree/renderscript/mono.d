@@ -1,6 +1,6 @@
-/media/5b317046-147a-42ee-aec1-f73caf1922c5/home/kloud9/WorkSpace2/PenelopeMainActivity/res/raw/mono.bc \
-  /media/5b317046-147a-42ee-aec1-f73caf1922c5/home/kloud9/WorkSpace2/PenelopeMainActivity/gen/com/example/android/rs/hellocompute/ScriptC_mono.java: \
-  /media/5b317046-147a-42ee-aec1-f73caf1922c5/home/kloud9/WorkSpace2/PenelopeMainActivity/src/com/harmonicprocesses/penelopefree/renderscript/mono.rs \
+/media/5b317046-147a-42ee-aec1-f73caf1922c5/home/kloud9/WorkSpace/PenelopeMainActivity/res/raw/mono.bc \
+  /media/5b317046-147a-42ee-aec1-f73caf1922c5/home/kloud9/WorkSpace/PenelopeMainActivity/gen/com/example/android/rs/hellocompute/ScriptC_mono.java: \
+  /media/5b317046-147a-42ee-aec1-f73caf1922c5/home/kloud9/WorkSpace/PenelopeMainActivity/src/com/harmonicprocesses/penelopefree/renderscript/mono.rs \
   /media/5b317046-147a-42ee-aec1-f73caf1922c5/home/kloud9/WorkSpace/adt-bundle-linux/sdk/platform-tools/renderscript/include/rs_core.rsh \
   /media/5b317046-147a-42ee-aec1-f73caf1922c5/home/kloud9/WorkSpace/adt-bundle-linux/sdk/platform-tools/renderscript/include/rs_types.rsh \
   /media/5b317046-147a-42ee-aec1-f73caf1922c5/home/kloud9/WorkSpace/adt-bundle-linux/sdk/platform-tools/renderscript/clang-include/stdbool.h \

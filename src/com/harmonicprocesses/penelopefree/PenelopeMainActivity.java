@@ -1,21 +1,27 @@
 package com.harmonicprocesses.penelopefree;
 
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import com.harmonicprocesses.penelopefree.R;
+import com.harmonicprocesses.penelopefree.audio.AudioConstant;
 import com.harmonicprocesses.penelopefree.audio.AudioOnAir;
+import com.harmonicprocesses.penelopefree.audio.AudioProcessor;
+import com.harmonicprocesses.penelopefree.audio.DSPEngine;
 import com.harmonicprocesses.penelopefree.audio.OnAir;
 import com.harmonicprocesses.penelopefree.camera.Pcamera;
 import com.harmonicprocesses.penelopefree.openGL.MyGLSurfaceView;
 import com.harmonicprocesses.penelopefree.settings.HelpActivity;
-import com.harmonicprocesses.penelopefree.settings.SettingsFragment;
 import com.harmonicprocesses.penelopefree.settings.SettingsActivity;
+import com.harmonicprocesses.penelopefree.settings.SettingsFragment;
 import com.harmonicprocesses.penelopefree.settings.UpSaleDialog;
-//import com.harmonicprocesses.penelopefree.settings.SubSettingsFragment;
 import com.harmonicprocesses.penelopefree.usbAudio.UsbAudioManager;
 import com.harmonicprocesses.penelopefree.util.SystemUiHider;
 import com.harmonicprocesses.penelopefree.util.SystemUiHiderBase;
+//import com.harmonicprocesses.penelopefree.settings.SubSettingsFragment;
 
 import android.animation.Animator;
 import android.animation.Animator.AnimatorListener;
@@ -44,6 +50,8 @@ import android.opengl.GLSurfaceView;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.os.PowerManager;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
@@ -62,6 +70,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -106,7 +115,7 @@ public class PenelopeMainActivity extends Activity implements TextureView.Surfac
 	/**
 	 * The flags to pass to {@link SystemUiHider#getInstance}.
 	 */
-	private static final int HIDER_FLAGS = SystemUiHiderBase.FLAG_HIDE_NAVIGATION;
+	private static final int HIDER_FLAGS = SystemUiHiderBase.FLAG_FULLSCREEN;
 
 	/**
 	 * The instance of the {@link SystemUiHider} for this activity.
@@ -191,24 +200,63 @@ public class PenelopeMainActivity extends Activity implements TextureView.Surfac
 	
 	Pcamera mPcamera;
 	SharedPreferences mSharedPrefs;
+	AudioProcessor mAudioProcessor;
+	
+	Handler procNoteHandler = null;
+	
+	TextView backgroundText;
+	Button onAirButton;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		
 		mSharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 		int number_of_runs = mSharedPrefs.getInt("number_of_runs", 0);
-		if (number_of_runs==0){
-			new UpSaleDialog(R.string.dialog_welcome_to_penelope, R.string.dialog_button_enjoy)
+		if (number_of_runs<=1){
+			new UpSaleDialog(R.string.dialog_welcome_to_penelope, 
+					R.string.dialog_button_enjoy)
 				.show(getFragmentManager(),"PaidForVersionDialog");
 		}
 		mSharedPrefs.edit().putInt("number_of_runs", ++number_of_runs).apply();
 		
+		
+		
+		mGLView = new MyGLSurfaceView(this);
+		mAudioProcessor = new AudioProcessor(this,
+				android.os.Process.THREAD_PRIORITY_AUDIO,
+				android.os.Process.THREAD_PRIORITY_URGENT_AUDIO,
+				mSharedPrefs.getInt("sound_buffer_size_key", 2));
+		
+		mAudioProcessor.setSprectrumUpdateHandler(new UpdateSpectrumHandler(this,getMainLooper()));
+		
+		mAudioProcessor.start();
+		procNoteHandler = mAudioProcessor.getNoteUpdateHandler();
+		//mAudioProcessor.dsp = new DSPEngine(mAudioProcessor.bufferSize,
+		//		AudioConstant.sampleRate, getBaseContext());
+		//maybe creating our dsp engine on the processor thread will
+		// alleviate some reflection and allocation calls.
+		/*procNoteHandler.post(new Runnable(){
+
+			@Override
+			public void run() {
+				mAudioProcessor.dsp = new DSPEngine(mAudioProcessor.bufferSize,
+						AudioConstant.sampleRate, getBaseContext());
+				
+			}
+			
+		});//*/
+		
+		
 		getOverflowMenu();
 		setContentView(R.layout.activity_fullscreen);
 
+		
 		final View controlsView = findViewById(R.id.fullscreen_content_controls);
 		final View contentView = findViewById(R.id.fullscreen_content);
+		backgroundText = (TextView) findViewById(R.id.fullscreen_content);
+		onAirButton = (Button) findViewById(R.id.dummy_button); 
 		mFragmentViewGroup = (FrameLayout) findViewById(R.id.fragment_container);
 
 		// Set up an instance of SystemUiHider to control the system UI for
@@ -259,15 +307,36 @@ public class PenelopeMainActivity extends Activity implements TextureView.Surfac
 		
 		// Set up the user interaction to manually show or hide the system UI.
 		//*
-		contentView.setOnTouchListener(new View.OnTouchListener(){
+		
+				
+		View.OnTouchListener onTouchGeneralListener = new View.OnTouchListener(){
 
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
-				return mGLView.listenForTouch.onTouch(v, event);
+				mHideHandler.removeCallbacks(mToast1Runnable);
+				if (event.getAction()==MotionEvent.ACTION_UP||
+						event.getAction()==MotionEvent.ACTION_CANCEL){
+					if (TOGGLE_ON_CLICK) {
+						mSystemUiHider.toggle();
+					
+					} else {
+						mSystemUiHider.hide();
+					}
+					
+				}
+				if (TOGGLE_ONAIR_CLICK) {mGLView.listenForTouch.onTouch(v, event);}
+				return true;//mGLView.listenForTouch.onTouch(v, event);
 			}
 		
-		}); //*/
+		}; //*/
 		
+				
+		contentView.setOnTouchListener(onTouchGeneralListener);
+		//controlsView.setOnClickListener(onClickGeneralListener);
+		
+		
+		
+		/*
 		contentView.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
@@ -276,30 +345,29 @@ public class PenelopeMainActivity extends Activity implements TextureView.Surfac
 					
 				} else {
 					mSystemUiHider.hide();
-					
 				}
 				
 
 			}
-		});
+		}); //*/
 
 		// Upon interacting with UI controls, delay any scheduled hide()
 		// operations to prevent the jarring behavior of controls going away
 		// while interacting with the UI.
-		findViewById(R.id.dummy_button).setOnTouchListener(
+		onAirButton.setOnTouchListener(
 				mDelayHideTouchListener);
-		findViewById(R.id.dummy_button).setOnClickListener(
+		onAirButton.setOnClickListener(
 				mClickListener);
 		
 				
 		// Create instance on AudioOnAir
 		// get list of USB connected devices.
 		
-		mUsbAudioManager = new UsbAudioManager(this);
-		mAudioOnAir = new AudioOnAir((Button) findViewById(R.id.dummy_button), 
-				(TextView) findViewById(R.id.fullscreen_content), 
-				mUsbAudioManager);
-		mGLView = new MyGLSurfaceView(this,mAudioOnAir.NoteSpectrum);
+		//mUsbAudioManager = new UsbAudioManager(this);
+		//mAudioOnAir = new AudioOnAir((Button) findViewById(R.id.dummy_button), 
+		//		(TextView) findViewById(R.id.fullscreen_content), 
+		//		mUsbAudioManager);
+		
 		mGLTextureView = new OpenGLTextureViewSample(this);
 		mGLTextureView.setSurfaceTextureListener(this);
 		
@@ -314,10 +382,23 @@ public class PenelopeMainActivity extends Activity implements TextureView.Surfac
 		//ActionBar mActionBar = getActionBar();
 		//mActionBar.onMenuVisibilitychange();
 		
-
-
 		
+		if (number_of_runs<=3){
+			mHideHandler.postDelayed(mToast1Runnable, AUTO_HIDE_DELAY_MILLIS);
+			mHideHandler.postDelayed(mToast2Runnable, 2*AUTO_HIDE_DELAY_MILLIS);
+		}
 	}
+	
+	int someDo;
+	
+
+	
+	/**********
+	@Override
+	public void onClick(View v){
+		
+		someDo = 1;
+	}//*******/
 	
 	@Override
 	protected void onPause(){
@@ -353,7 +434,8 @@ public class PenelopeMainActivity extends Activity implements TextureView.Surfac
 	@Override 
 	protected void onStop(){
 		super.onStop();
-		mAudioOnAir.StopAudio();
+		//mAudioOnAir.StopAudio();
+		mAudioProcessor.stopAudio();
 		mPcamera.stop(mFragmentViewGroup);
 	}
 	
@@ -361,21 +443,43 @@ public class PenelopeMainActivity extends Activity implements TextureView.Surfac
 	@Override 
 	protected void onDestroy(){
 		super.onDestroy();
-		mAudioOnAir.kill();
-		mUsbAudioManager.close(this);
+		//mAudioOnAir.kill();
+		mAudioProcessor.releaseAudio();
+		mAudioProcessor.quit();
+		//mUsbAudioManager.close(this);
 	}
 	
 	@Override
 	protected void onRestart(){
 		super.onRestart();
-		mAudioOnAir.StartAudio();
-		if (TOGGLE_ONAIR_CLICK && RECORD_MODE) { //TODO change this to and record
+		//mAudioOnAir.StartAudio();
+		if (TOGGLE_ONAIR_CLICK){
+			startAudio();
+			if (RECORD_MODE) { //TODO change this to and record
 			mPcamera.start(mFragmentViewGroup);
+			}
 		}
 	}
 	
 	
 	
+	private void startAudio() {
+		procNoteHandler.post(new Runnable(){
+
+			@Override
+			public void run() {
+				mAudioProcessor.startAudio(mSharedPrefs.getBoolean("enable_reverb_key", true),
+						mSharedPrefs.getBoolean("invert_audio_key", false), 
+						mSharedPrefs.getInt("sound_buffer_size_key", 2),
+						((float) mSharedPrefs.getInt("sound_wet_dry_key", 50)/100.0f));
+				
+			}
+			
+		});
+
+	}
+
+
 	@Override
 	protected void onPostCreate(Bundle savedInstanceState) {
 		super.onPostCreate(savedInstanceState);
@@ -416,8 +520,15 @@ public class PenelopeMainActivity extends Activity implements TextureView.Surfac
 	    return true;
 	}
 	
+	boolean optionsMenuPrepared = false;
+	
 	public boolean onPrepareOptionsMenu(Menu menu){
-		mHideHandler.removeCallbacks(mHideRunnable);
+		if (!optionsMenuPrepared){
+			optionsMenuPrepared = true;
+		} else {
+			mHideHandler.removeCallbacks(mHideRunnable);
+		}
+		
 		if (TOGGLE_ONAIR_CLICK){
 			menu.findItem(R.id.options_menu_item_record).setEnabled(true);
 			menu.findItem(R.id.options_menu_item_record).setOnMenuItemClickListener(RecordOptionMenuListener);
@@ -446,11 +557,48 @@ public class PenelopeMainActivity extends Activity implements TextureView.Surfac
 		}
 	};
 	
+	protected static class UpdateSpectrumHandler extends Handler {
+		private final WeakReference<PenelopeMainActivity> pennyReference;
+		
+		public UpdateSpectrumHandler(PenelopeMainActivity penny, Looper looper){
+			super(looper);
+			pennyReference = new WeakReference<PenelopeMainActivity>(penny);
+		}
+		
+		public void handleMessage(Message msg) {
+			PenelopeMainActivity penny = pennyReference.get();
+			if (penny!=null){
+				penny.onNewSpectrum((float[]) msg.obj);
+			}
+		}
+	}
+	
+	protected void onNewSpectrum(float[] newSpectrum) {
+		int note = 0;
+		if (TOGGLE_ONAIR_CLICK){
+			try {
+				note = mGLView.updateAmplitudes(newSpectrum);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		synchronized(procNoteHandler){
+			Message msg = procNoteHandler.obtainMessage(); 
+			msg.obj = note;
+			procNoteHandler.sendMessage(msg); 
+		}
+	}
+	
 	View.OnClickListener mClickListener = new View.OnClickListener() {
 		@Override
 		public void onClick(View view) {
-			mAudioOnAir.Toggle(mGLView);
+			//mAudioOnAir.Toggle(mGLView);
 			TOGGLE_ONAIR_CLICK = !TOGGLE_ONAIR_CLICK;
+			mHideHandler.removeCallbacks(mToast2Runnable);
+			
+			CharSequence temp = backgroundText.getText();
+			backgroundText.setText(onAirButton.getText());
+			onAirButton.setText(temp);
 			
 			if (TOGGLE_ONAIR_CLICK) {
 				//intend to start the audio 
@@ -464,6 +612,15 @@ public class PenelopeMainActivity extends Activity implements TextureView.Surfac
 					.setDuration(AUTO_HIDE_DELAY_MILLIS)
 					.setListener(null);
 				mGLView.setOnTouchListener(mGLView.listenForTouch);
+				
+				startAudio();
+				/*/
+					mAudioProcessor.startAudio(mSharedPrefs.getBoolean("enable_reverb_key", true),
+							mSharedPrefs.getBoolean("invert_audio_key", false), 
+							mSharedPrefs.getInt("sound_buffer_size_key", 2),
+							((float) mSharedPrefs.getInt("sound_wet_dry_key", 50)/100.0f));
+				}//*/
+				
 				//setContentView(mGLView);
 				//setContentView(mGLTextureView);
 				//mGLView.builder.show();
@@ -480,7 +637,9 @@ public class PenelopeMainActivity extends Activity implements TextureView.Surfac
 					.setListener(null);
 				//mGLView.removeOnTouchListener(mGLView.listenForTouch);
 				mFragmentViewGroup.removeView(mGLView);
-
+				
+				mAudioProcessor.stopAudio();
+				
 				//setContentView(R.layout.activity_fullscreen);
 			}
 			
@@ -546,6 +705,24 @@ public class PenelopeMainActivity extends Activity implements TextureView.Surfac
 		@Override
 		public void run() {
 			mSystemUiHider.hide();
+		}
+	};
+	
+	Context mContext = this;
+	
+	Runnable mToast1Runnable = new Runnable() {
+		@Override
+		public void run() {
+			Toast.makeText(mContext, R.string.touch_screen, AUTO_HIDE_DELAY_MILLIS).show();
+			mHideHandler.postDelayed(mToast1Runnable, 2*AUTO_HIDE_DELAY_MILLIS);
+		}
+	};
+	
+	Runnable mToast2Runnable = new Runnable() {
+		@Override
+		public void run() {
+			Toast.makeText(mContext, R.string.go_onair, AUTO_HIDE_DELAY_MILLIS).show();
+			mHideHandler.postDelayed(mToast2Runnable, 2*AUTO_HIDE_DELAY_MILLIS);
 		}
 	};
 

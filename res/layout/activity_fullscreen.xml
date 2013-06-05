@@ -49,7 +49,8 @@
             android:layout_gravity="bottom|center_horizontal"
             android:background="@color/black_overlay"
             android:orientation="horizontal"
-            tools:ignore="UselessParent" >
+            tools:ignore="UselessParent">
+            
             
  <!--  style="?buttonBarButtonStyle"-->
  

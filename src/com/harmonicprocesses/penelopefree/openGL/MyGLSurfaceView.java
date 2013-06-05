@@ -1,6 +1,9 @@
 package com.harmonicprocesses.penelopefree.openGL;
 
 
+import com.harmonicprocesses.penelopefree.audio.AudioConstant;
+import com.harmonicprocesses.penelopefree.audio.DSPEngine;
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -26,9 +29,11 @@ public class MyGLSurfaceView extends GLSurfaceView {
     
     public TextView note_display;
 
-    public MyGLSurfaceView(Context context,int[] noteSpectrum) {
+    public MyGLSurfaceView(Context context) {
         super(context);
 
+        NoteSpectrum = DSPEngine.staticCalcNoteBins(AudioConstant.defaultBufferSize*2, 
+        		AudioConstant.sampleRate);
         // Create an OpenGL ES 2.0 context.
         setEGLContextClientVersion(2);
         // Set the Renderer for drawing on the GLSurfaceView
@@ -40,7 +45,7 @@ public class MyGLSurfaceView extends GLSurfaceView {
         // Render the view only when there is a change in the drawing data
         setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
         
-        NoteSpectrum = noteSpectrum;
+        
         
         mContext = context;
         
@@ -97,11 +102,11 @@ public class MyGLSurfaceView extends GLSurfaceView {
 	        // interested in events where the touch position changed.
 	    	if (e.getAction()==MotionEvent.ACTION_DOWN){
 	    		fingerDown = true;
-	    	} else if (e.getAction()==MotionEvent.ACTION_UP){
+	    	} else if (e.getAction()==MotionEvent.ACTION_UP||e.getAction()==MotionEvent.ACTION_CANCEL){
 	    		fingerDown = false;
 	    	}
 	    	
-	    	
+	    	/*********
 	        float x = e.getX();
 	        float y = e.getY();
 
@@ -127,6 +132,8 @@ public class MyGLSurfaceView extends GLSurfaceView {
 
 	        mPreviousX = x;
 	        mPreviousY = y;
+	        //********/
+	    	
 	        //return true;
 			return true;
 		}
@@ -141,11 +148,12 @@ public class MyGLSurfaceView extends GLSurfaceView {
     	}
 	}
     
-    public boolean updateAmplitudes(float[] amplitudes) throws Exception{
+    public int updateAmplitudes(float[] amplitudes) throws Exception{
+    	mRenderer.mAmplitude = amplitudes;
     	maxAmplitude = mRenderer.mAmplitude[maxAmpIdx];
     	mRenderer.mNoteAmp = maxAmplitude;
     	float minAmplitude = 0.001f;
-    	mRenderer.mAmplitude = amplitudes;
+    	
     	
     	
     	for (int i=24;i<72;i++){
@@ -176,6 +184,13 @@ public class MyGLSurfaceView extends GLSurfaceView {
     	
     	//note_display.bringToFront();
     	sendRequestRender();
-    	return true;
+    	float xAccel = mRenderer.mAccelmeter.linear_acceleration[0];
+		if (xAccel>1.0){
+			return maxAmpIdx + 1;
+		} else if (xAccel<-1.0){
+			return maxAmpIdx -1;
+		} else { 
+			return maxAmpIdx;
+		}
     }
 }

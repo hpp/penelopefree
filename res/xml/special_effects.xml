@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen  xmlns:android="http://schemas.android.com/apk/res/android"
+	android:title="@string/special_effects">
+	<com.harmonicprocesses.penelopefree.settings.SeekBarPreference
+		android:key="sound_wet_dry_key"
+		android:title="@string/wet_dry_ratio"
+		android:summary="@string/wet_dry_ratio_summary"
+		android:dialogMessage="@string/wet_dry_ratio_dialog"
+		android:defaultValue="92"
+		android:text="@string/wet_dry_ratio_text"
+		android:max="100"/>
+	<CheckBoxPreference
+		android:key="enable_reverb_key"
+		android:title="@string/enable_reverb"
+		android:defaultValue="false"/>
+	<CheckBoxPreference
+		android:key="enable_pitch_correct_key"
+		android:id="@+id/enable_pitch_correct"
+		android:title="@string/enable_pitch_correct"
+		android:defaultValue="false"/>
+	<com.harmonicprocesses.penelopefree.settings.SeekBarPreference
+		android:key="SEFX_pitch_correct_level"
+		android:title="@string/SEFX_pitch_correct"
+		android:summary="@string/SEFX_pitch_corrects_summary"
+		android:dialogMessage="@string/SEFX_pitch_correct_dialog"
+		android:defaultValue="100"
+		android:dependency="enable_pitch_correct_key"
+		android:text="@string/SEFX_pitch_correct_text"
+		android:max="100"/>
+</PreferenceScreen> 

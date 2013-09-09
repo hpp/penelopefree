@@ -30,4 +30,10 @@
 		<nature>com.android.ide.eclipse.adt.AndroidNature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
+	<variableList>
+		<variable>
+			<name>ANDROID_SDK</name>
+			<value>file:/media/5b317046-147a-42ee-aec1-f73caf1922c5/home/kloud9/WorkSpace/adt-bundle-linux/sdk</value>
+		</variable>
+	</variableList>
 </projectDescription>

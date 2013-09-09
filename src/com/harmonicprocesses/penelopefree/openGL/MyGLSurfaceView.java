@@ -26,6 +26,7 @@ public class MyGLSurfaceView extends GLSurfaceView {
 	public int maxAmpIdx = 0;
 	private boolean fingerDown = false;
 	private SharedPreferences mSharedPrefs;
+	public static double AMPLITUDE_THRESHOLD = 0.001;
     
     public TextView note_display;
 
@@ -152,7 +153,7 @@ public class MyGLSurfaceView extends GLSurfaceView {
     	mRenderer.mAmplitude = amplitudes;
     	maxAmplitude = mRenderer.mAmplitude[maxAmpIdx];
     	mRenderer.mNoteAmp = maxAmplitude;
-    	float minAmplitude = 0.001f;
+    	double minAmplitude = AMPLITUDE_THRESHOLD;
     	
     	
     	

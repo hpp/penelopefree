@@ -40,7 +40,7 @@
 	    	android:title="@string/wet_dry_ratio"
 	    	android:summary="@string/wet_dry_ratio_summary"
 	    	android:dialogMessage="@string/wet_dry_ratio_dialog"
-	    	android:defaultValue="50"
+	    	android:defaultValue="92"
 	    	android:text="@string/wet_dry_ratio_text"
 	    	android:max="100"/>
 	    <com.harmonicprocesses.penelopefree.settings.SeekBarPreference

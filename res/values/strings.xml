@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+	
 
     <string name="app_name">Penelope</string>
     <string name="OnAirTrue">On Air</string>
@@ -62,7 +63,7 @@
 	<string name="dialog_restart_simulation">You must restart simulation for this change to take effect.</string>
 	<string name="dialog_button_ok">OK</string> 
 	
-	<string name="dialog_welcome_to_penelope">Welcome to Penelope.</string>
+	<string name="dialog_welcome_to_penelope">Welcome to Penelope. \n\nEnjoy!</string>
 	<string name="dialog_button_enjoy">Enjoy!</string>
 	<string name="enable_reverb">Enable Reverb</string>
 	<string name="inver_audio_summary">Reverse phase of output audio. May help reduce feedback.</string> 
@@ -81,5 +82,28 @@
 	<string name="buff_size_int_summary">Size of audio buffer, increase to clean up audio</string>
 	<string name="buff_size_int_dialog">Size of audio buffer, increase to clean up audio, decrease to reduce delay. Target for Samsung S3 is 2.</string>
 	<string name="buff_size_int_text">Audio Buffer Size</string>
+	
+	<!--  From Here on out translations need to be updated -->
+	<string name="dialog_rate_penelope">Enjoying Penelope? \n\nPlease take the time to give Penelope a FIVE Star Rating. It is Very important to us. \n\nThank You!</string>
+	<string name="dialog_purchase1">Thank You kindly for your puchase of </string>
+	<string name="dialog_purchase2">\n\nRest Assured Google Play will remmeber this purchase, should you get a new phone.\n\nEnjoy!</string>
+	<string name="dialog_purchase_fail">ERROR while purchasing!\n\nWe are sorry, but the purchase was not successful.</string>
+	<string name="option_special_effects">Special Effects</string>
+	<string name="special_effects">Special Effects</string>
+	<string name="back">Back</string>
+	<string name="enable_pitch_correct">Penelope Pitch Correction</string>
+	<string name="SEFX_pitch_correct">Pitch Correction Level</string>
+	<string name="SEFX_pitch_corrects_summary">Change Wet/Dry Ratio for overall effect</string>
+	<string name="SEFX_pitch_correct_dialog">Sing on note.</string>
+	<string name="SEFX_pitch_correct_text">Level</string>
+	<string name="dialog_purchase_pitch_correct">Buy Pitch Correct?\n\n</string>
+	<string name="dialog_purchase_please_try">\n\nPlease try for free first to see how well it works for you.</string>
+	<string name="dialog_button_try">Try For Free</string>
+	<string name="dialog_button_buy">Buy Now</string>
+	<string name="dialog_you_have">You have </string>
+	<string name="dialog_more_tries"> more tries</string>
+	<string name="dialog_purchase_tries_exhausted1">Sorry you have no more tries.\n\nPlease purchase </string>
+	<string name="dialog_purchase_tries_exhausted2"> to continue.</string>
+	<string name="dialog_purchase_error">ERROR trying </string>
 	
 </resources>

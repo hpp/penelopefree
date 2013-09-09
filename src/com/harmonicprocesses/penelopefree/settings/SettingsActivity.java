@@ -22,7 +22,7 @@ public class SettingsActivity extends Activity {
 		Intent intent = getIntent();
 		int xmlId = intent.getIntExtra(PenelopeMainActivity.EXTRA_MESSAGE, R.xml.settings);
 		// Display the fragment as the main content.
-		mSettingsFragment = new SettingsFragment(xmlId);
+		mSettingsFragment = new SettingsFragment().setXmlId(xmlId);
 
 				
         getFragmentManager().beginTransaction()

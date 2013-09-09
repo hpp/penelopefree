@@ -4,7 +4,10 @@ import java.lang.ref.WeakReference;
 import java.nio.ByteBuffer;
 
 import com.harmonicprocesses.penelopefree.PenelopeMainActivity;
+import com.harmonicprocesses.penelopefree.camera.BufferEvent;
 
+import android.app.Activity;
+import android.content.Context;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioRecord;
@@ -20,6 +23,7 @@ import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
+import android.view.View;
 
 /**
  * AudioThru is a high priority handler thread for handling callback events
@@ -55,14 +59,16 @@ public class AudioThru extends HandlerThread {
 	private volatile float wetDry;// = AudioConstant.wetDry;
 	private volatile int bufferSize;// = AudioConstant.bufferSize;
 	private volatile boolean invertAudioOn = false;
+	private volatile BufferEvent.CodecBufferObserver observer = null;
 	
 	//Handlers
 	Handler processBufferUpdateHandler = null;
+	Context mContext;
 		
 	
-	public AudioThru(int priority, int buffSize){
+	public AudioThru(Context context, int priority, int buffSize){
 		super(AudioConstant.AudioThruThreadName,priority);
-
+		mContext = context;
 		bufferSize = AudioConstant.getBufferSize(buffSize);
 		floatBufferSize = AudioConstant.getFloatBufferSize(buffSize);
 		inputByteBuffer = ByteBuffer.allocateDirect(bufferSize);
@@ -150,6 +156,14 @@ public class AudioThru extends HandlerThread {
 		mAudioTrack.play();
 	}
 	
+	public void startRecord(BufferEvent.CodecBufferObserver Observer){
+		observer = Observer;
+	}
+	
+	public void stopRecord(){
+		observer = null;
+	}
+	
 	public void stopAudioThru(){
 		mAudioRecord.stop();
 		mAudioTrack.stop();
@@ -165,6 +179,14 @@ public class AudioThru extends HandlerThread {
 		mAudioTrack = null;
 	}
 	
+	public void updateWetDry(float lev){
+		wetDry = lev;
+	}
+	
+	public void updateReverb(boolean reverbIsOn){
+		if (plateReverb!=null) plateReverb.setEnabled(reverbIsOn);
+	}
+	
 	/*==========================================================================
 	 * Listeners and interfaces
 	 *==========================================================================
@@ -177,8 +199,11 @@ public class AudioThru extends HandlerThread {
 		public void onPeriodicNotification(AudioRecord recorder) {
 			inputBuffer = Read();
 			float[] outputBuffer = calcOutput(inputBuffer,processBuffer);
-			Write(outputBuffer);
+			byte[] outputByteArray = Write(outputBuffer);
 			onNewSamplesReceived(inputBuffer);
+			record(ByteBuffer.wrap(outputByteArray));
+			//outputByteBuffer = ByteBuffer;
+			//OnBufferListener.this.OnBufferReady(ByteBuffer.wrap(outputByteArray));
 		}
 	};
 	
@@ -264,13 +289,25 @@ public class AudioThru extends HandlerThread {
 	}
 
 	byte[] outputByteBuffer;
-	private void Write(float[] out_buff) {
+	private byte[] Write(float[] out_buff) {
 		outputByteBuffer = writeByteBuffer(out_buff);
-		mAudioTrack.write(outputByteBuffer, 0, outputByteBuffer.length);	
+		mAudioTrack.write(outputByteBuffer, 0, outputByteBuffer.length);
+		return outputByteBuffer;
 	}
 
 	private void onprocessBufferUpdate(float[] new_proc_buff){
 		processBuffer = new_proc_buff;
+	}
+	
+	private void record(final ByteBuffer newBuff) {
+		if (observer==null){return;}
+		((Activity) mContext).runOnUiThread(new Runnable() {
+
+			@Override
+			public void run() {
+				observer.fireAudioBufferReady(newBuff);
+			}
+		});
 	}
 
 	/*==========================================================================

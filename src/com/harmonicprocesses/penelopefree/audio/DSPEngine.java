@@ -614,6 +614,11 @@ public class DSPEngine {
 		} 
 		return -n;
 	}
+
+	public Context getContext() {
+		
+		return mContext;
+	}
 	
 }
 

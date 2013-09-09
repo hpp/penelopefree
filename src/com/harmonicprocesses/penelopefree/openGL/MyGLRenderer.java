@@ -46,6 +46,7 @@ import java.nio.ShortBuffer;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -56,6 +57,7 @@ import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLUtils;
 import android.opengl.Matrix;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.renderscript.Allocation;
 import android.renderscript.BaseObj;
@@ -66,6 +68,7 @@ import android.renderscript.RenderScript;
 import android.renderscript.Script;
 import android.util.Log;
 
+@TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
 public class MyGLRenderer implements GLSurfaceView.Renderer {
 	
 	private Context mContext;
@@ -271,7 +274,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         // move particles and calc bins
         //mParticleBins.clear();
         
-        
+        /*****************************************
         for (int i = 0;i<numParticles;i++){
         	//Matrix.setIdentityM(mTranslationMatrix, 0);
         	mParticle[i].next();
@@ -280,6 +283,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         	particleVBO[i*3+1] = mParticle[i].location[1];
         }
         mParticleBins.normallize();
+        //*/
         
         int j = 0;
         for (int i = 0; i < mSquare.length; i++){
@@ -297,6 +301,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         		mSquare[i].draw(mTransposeMatrix, 0.0f);//mParticleBins.normallizedBins[i]);
         	}
         }
+        //***************************************/
         
         //Matrix.multiplyMM(mMVPMatrix, 0,mMVPMatrix , 0,mTransposeMatrix , 0);
         // Create a rotation for the triangle
@@ -392,7 +397,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     
     private void nextParticleVBO() {
 	    mInAllocation.copy1DRangeFromUnchecked(0, numParticles, particleVBO);
-	    mScript.forEach_root(mInAllocation, mOutAllocation);
+	    //mScript.forEach_root(mInAllocation, mOutAllocation);
 	     
 	    //mOutAllocation.;
 	    

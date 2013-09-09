@@ -5,14 +5,16 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
 import com.harmonicprocesses.penelopefree.openGL.MyGLRenderer;
+import com.harmonicprocesses.penelopefree.openGL.MyGLSurfaceView;
 import com.harmonicprocesses.penelopefree.openGL.utils.ModeNodes;
 import com.harmonicprocesses.penelopefree.openGL.utils.SoundParticleHexBins;
 
 import android.opengl.GLES20;
+import android.util.Log;
 
 public class BaseParticles {
 	private final String vertexShaderCode =
-	        // This matrix member variable provides a hook to manipulate
+	    // This matrix member variable provides a hook to manipulate
         // the coordinates of the objects that use this vertex shader
         "uniform mat4 uMVPMatrix;" +
 
@@ -38,7 +40,8 @@ public class BaseParticles {
 
     // number of coordinates per vertex in this array
     static final int COORDS_PER_VERTEX = 3;
-    float[] particleCoords, particleMomentums; 
+    float[] particleCoords, particleMomentums, amplitudeHistory;
+    private int amplitudeHistoryIndex;
     private int vertexCount; 
     private final int vertexStride = COORDS_PER_VERTEX * 4; // 4 bytes per vertex
 
@@ -50,6 +53,8 @@ public class BaseParticles {
     	
     	particleCoords = randomPositions(numParticles);
     	particleMomentums = new float[numParticles*2]; // direction and speed vectors
+    	amplitudeHistory = new float[1000];
+    	amplitudeHistoryIndex = 0;
     	
     	vertexCount = particleCoords.length / COORDS_PER_VERTEX;
     	    
@@ -184,24 +189,31 @@ public class BaseParticles {
 			
 			//* calculate distance from node
 			force = amplitude;
+
+			//Log.d("com.hpp.penny.openGL.shapes.BaseParticles","amplitude="+amplitude );
+			
 			angle = 2.0f*Math.PI*Math.random(); //new random angle
-			if (towardNodes<0){
-				damping = (float) (1 - Math.pow(Math.cos(2.0f*Math.PI*dist/nodeRadius),3));
+			if (force>MyGLSurfaceView.AMPLITUDE_THRESHOLD*.01){
+				if (towardNodes<0){
+					damping = (float) (1 - Math.pow(Math.cos(2.0f*Math.PI*dist/nodeRadius),3));
+				} else {
+					damping = (float) (1 - Math.pow(Math.sin(2.0f*Math.PI*dist/nodeRadius),3));
+				}
 			} else {
-				damping = (float) (1 - Math.pow(Math.sin(2.0f*Math.PI*dist/nodeRadius),3));
+				damping = 0;
 			}
 			
 			//*/
 			
 			// update particleMomentum
-			particleMomentums[k] = (float) (damping*particleMomentums[k]-
-					towardNodes*force*Math.cos(angle));
-			particleMomentums[k+1] = (float) (damping*particleMomentums[k+1]-
-					towardNodes*force*Math.sin(angle));
+			particleMomentums[k] = (float) (towardNodes*force*Math.cos(angle)+
+					damping*particleMomentums[k]);
+			particleMomentums[k+1] = (float) (towardNodes*force*Math.sin(angle)+
+					damping*particleMomentums[k+1]);
 			
 			// update particlePosition
-			x+=particleMomentums[k++]/1000;
-			y+=particleMomentums[k++]/1000;
+			x+=particleMomentums[k++]/100;
+			y+=particleMomentums[k++]/100;
 			
 			// check if particle is outside of circle
 			if (SoundParticleHexBins.distance(0.0f, 0.0f, x,y)>radius){

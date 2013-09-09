@@ -1,9 +1,14 @@
 package com.harmonicprocesses.penelopefree.audio;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 
+import com.harmonicprocesses.penelopefree.R;
 import com.harmonicprocesses.penelopefree.audio.AudioThru.OnNewSamplesReceivedUpdateListener;
+import com.hpp.billing.PurchaseDialog;
+import com.hpp.billing.PurchaseManager;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Handler;
@@ -11,6 +16,8 @@ import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
 import android.os.MessageQueue;
+import android.preference.CheckBoxPreference;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 public class AudioProcessor extends HandlerThread{
@@ -19,9 +26,12 @@ public class AudioProcessor extends HandlerThread{
 	public int bufferSize;
 	private static int sampleRate = AudioConstant.sampleRate;
 	private static String TAG = "com.hpp.penny.AudioProcessor";
+	Context mContext;
 	
 	private AudioThru mAudioThru;
 	public DSPEngine dsp;
+	public volatile boolean boolPitchCorrectEnabled;
+	public volatile float pitchCorrectLevel;
 	private Handler spectrumUpdateHandler = null, noteUpdateHandler = null,
 			processBufferUpdateHandler = null;
 	private int mNote;
@@ -31,7 +41,7 @@ public class AudioProcessor extends HandlerThread{
 	public AudioProcessor(Context context, int audioProcessorPriority, 
 			int audioThruPriority,	int buffSize) {
 		super(AudioConstant.AudioProcessorThreadName, audioProcessorPriority);
-		mAudioThru = new AudioThru(audioThruPriority, buffSize);
+		mAudioThru = new AudioThru(context, audioThruPriority, buffSize);
 		bufferSize = AudioConstant.getBufferSize(buffSize);
 		floatBufferSize = AudioConstant.getFloatBufferSize(buffSize);
 		dsp = new DSPEngine(floatBufferSize/2, AudioConstant.sampleRate, context);
@@ -39,6 +49,10 @@ public class AudioProcessor extends HandlerThread{
 	
 	public AudioProcessor getProcessor(){
 		return this;
+	}
+	
+	public AudioThru getThru(){
+		return mAudioThru;
 	}
 	
 	
@@ -121,6 +135,25 @@ public class AudioProcessor extends HandlerThread{
 		mAudioThru.releaseAudio();
 		mAudioThru.quit();
 	}
+	
+	public void setPitchCorrect(boolean on){
+		boolPitchCorrectEnabled = on;
+		PreferenceManager.getDefaultSharedPreferences(dsp.getContext())
+				.edit().putBoolean(PurchaseManager.pitchCorrect,on).commit();
+	}
+	
+	public void updatePitchCorrect(int level){
+		pitchCorrectLevel = level/100.0f;
+	}
+	
+	public void updateReverb(boolean on){
+		mAudioThru.updateReverb(on);
+	}
+	
+	public void updateWetDry(int level){
+		mAudioThru.updateWetDry(level/100.0f);
+	}
+	
 	
 	/*==========================================================================
 	 * Process methods called on HandlerThread
@@ -293,4 +326,16 @@ public class AudioProcessor extends HandlerThread{
 		return proc_sample;
 	}
 
+	public ArrayList<String> checkSpecialEffects(Context context,PurchaseManager pm) {
+		
+		ArrayList<String> SEFX_on_but_not_purchased = new ArrayList<String>();
+		String sku = PurchaseManager.pitchCorrect;
+		boolPitchCorrectEnabled = PreferenceManager
+				.getDefaultSharedPreferences(context)
+				.getBoolean(sku,false);
+		if (boolPitchCorrectEnabled && !pm.purchasedList.contains(sku)) {
+			SEFX_on_but_not_purchased.add(sku);
+		}
+		return SEFX_on_but_not_purchased;
+	}
 }

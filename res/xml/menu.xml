@@ -4,6 +4,10 @@
           android:title="@string/option_record"
           android:icon="@drawable/ic_action_settings" 
           android:showAsAction="withText"/>
+    <item android:id="@+id/options_menu_special_efects"
+          android:title="@string/option_special_effects"
+          android:icon="@drawable/ic_action_settings"
+          android:showAsAction="withText"/>
     <item android:id="@+id/options_menu_item"
           android:title="@string/options"
           android:icon="@drawable/ic_action_settings" 

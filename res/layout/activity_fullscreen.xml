@@ -11,11 +11,14 @@
          is needed to present your content, e.g. VideoView, SurfaceView,
          TextureView, etc.
     -->
-	<FrameLayout
-        android:id="@+id/fragment_container"
+	
+
+    <FrameLayout
+        android:id="@+id/opengl_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent" 
-       />
+        android:background="@color/black_overlay"
+        />
 
     <TextView
         android:id="@+id/fullscreen_content"
@@ -72,5 +75,13 @@
         </LinearLayout>
 
     </FrameLayout>
+    
+    <FrameLayout
+        android:id="@+id/fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" 
+        android:background="@color/black_overlay"
+        android:visibility="gone" 
+       />
 
 </FrameLayout>

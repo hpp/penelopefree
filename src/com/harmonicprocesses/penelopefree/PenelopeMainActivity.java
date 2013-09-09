@@ -3,9 +3,14 @@ package com.harmonicprocesses.penelopefree;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.android.vending.billing.IInAppBillingService;
 import com.harmonicprocesses.penelopefree.R;
 import com.harmonicprocesses.penelopefree.audio.AudioConstant;
 import com.harmonicprocesses.penelopefree.audio.AudioOnAir;
@@ -17,10 +22,13 @@ import com.harmonicprocesses.penelopefree.openGL.MyGLSurfaceView;
 import com.harmonicprocesses.penelopefree.settings.HelpActivity;
 import com.harmonicprocesses.penelopefree.settings.SettingsActivity;
 import com.harmonicprocesses.penelopefree.settings.SettingsFragment;
+import com.harmonicprocesses.penelopefree.settings.SpecialEffects;
 import com.harmonicprocesses.penelopefree.settings.UpSaleDialog;
 import com.harmonicprocesses.penelopefree.usbAudio.UsbAudioManager;
 import com.harmonicprocesses.penelopefree.util.SystemUiHider;
 import com.harmonicprocesses.penelopefree.util.SystemUiHiderBase;
+import com.hpp.billing.PurchaseDialog;
+import com.hpp.billing.PurchaseManager;
 //import com.harmonicprocesses.penelopefree.settings.SubSettingsFragment;
 
 import android.animation.Animator;
@@ -33,11 +41,14 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Camera;
 import android.graphics.SurfaceTexture;
 import android.hardware.usb.UsbConstants;
@@ -50,11 +61,14 @@ import android.opengl.GLSurfaceView;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
 import android.os.PowerManager;
+import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.preference.PreferenceScreen;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -190,7 +204,7 @@ public class PenelopeMainActivity extends Activity implements TextureView.Surfac
 	/**
 	 * The instance of the {@link FrameLayout} for this activity
 	 */
-	private FrameLayout mFragmentViewGroup;
+	private FrameLayout mFragmentViewGroup, mOpenGLViewGroup;
 	
 	/**
 	 * The instance of the {@link UsbAudioManager} for this activity
@@ -200,39 +214,62 @@ public class PenelopeMainActivity extends Activity implements TextureView.Surfac
 	
 	Pcamera mPcamera;
 	SharedPreferences mSharedPrefs;
-	AudioProcessor mAudioProcessor;
+	public AudioProcessor mAudioProcessor;
 	
 	Handler procNoteHandler = null;
 	
 	TextView backgroundText;
 	Button onAirButton;
+	public PurchaseManager purchaseManager;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		// connect to Google Play Billing service
+		purchaseManager = new PurchaseManager(this);
 		
+		// check login stuff
 		mSharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+		
 		int number_of_runs = mSharedPrefs.getInt("number_of_runs", 0);
+		int ask_to_rate = mSharedPrefs.getInt("ask_to_rate", 0);
 		if (number_of_runs<=1){
-			new UpSaleDialog(R.string.dialog_welcome_to_penelope, 
-					R.string.dialog_button_enjoy)
-				.show(getFragmentManager(),"PaidForVersionDialog");
+			Bundle bundle = new Bundle();
+			bundle.putInt("messageId", R.string.dialog_welcome_to_penelope);
+			bundle.putInt("button1", R.string.dialog_button_ok);
+			UpSaleDialog dialog = new UpSaleDialog();
+			dialog.setArguments(bundle);
+			dialog.show(getFragmentManager(),"PaidForVersionDialog");
+			
+		} else if (number_of_runs>=3 && ask_to_rate==0){
+			Bundle bundle = new Bundle();
+			bundle.putInt("messageId", R.string.dialog_rate_penelope);
+			bundle.putInt("button1", R.string.dialog_button_ok);
+			bundle.putInt("button2", R.string.dialog_button_next_time);
+			UpSaleDialog dialog = new UpSaleDialog();
+			dialog.setArguments(bundle);
+			dialog.show(getFragmentManager(),"PaidForVersionDialog");
+			mSharedPrefs.edit().putInt("ask_to_rate", 1).apply();
 		}
 		mSharedPrefs.edit().putInt("number_of_runs", ++number_of_runs).apply();
 		
+		int version_code=9;
+		try {
+			version_code = this.getPackageManager()
+				    .getPackageInfo(this.getPackageName(), 0).versionCode;
+		} catch (NameNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		int new_features_level = mSharedPrefs.getInt("new_features_level", 9);
+		if (new_features_level<version_code) {
+			//TODO add New Features Dialog Covering Special Effects Products
+			mSharedPrefs.edit().putInt("new_features_level", version_code).apply();
+		}
 		
 		
-		mGLView = new MyGLSurfaceView(this);
-		mAudioProcessor = new AudioProcessor(this,
-				android.os.Process.THREAD_PRIORITY_AUDIO,
-				android.os.Process.THREAD_PRIORITY_URGENT_AUDIO,
-				mSharedPrefs.getInt("sound_buffer_size_key", 2));
 		
-		mAudioProcessor.setSprectrumUpdateHandler(new UpdateSpectrumHandler(this,getMainLooper()));
-		
-		mAudioProcessor.start();
-		procNoteHandler = mAudioProcessor.getNoteUpdateHandler();
 		//mAudioProcessor.dsp = new DSPEngine(mAudioProcessor.bufferSize,
 		//		AudioConstant.sampleRate, getBaseContext());
 		//maybe creating our dsp engine on the processor thread will
@@ -258,7 +295,29 @@ public class PenelopeMainActivity extends Activity implements TextureView.Surfac
 		backgroundText = (TextView) findViewById(R.id.fullscreen_content);
 		onAirButton = (Button) findViewById(R.id.dummy_button); 
 		mFragmentViewGroup = (FrameLayout) findViewById(R.id.fragment_container);
+		mOpenGLViewGroup = (FrameLayout) findViewById(R.id.opengl_container);
 
+		mGLView = new MyGLSurfaceView(this);
+		mAudioProcessor = new AudioProcessor(this,
+				android.os.Process.THREAD_PRIORITY_AUDIO,
+				android.os.Process.THREAD_PRIORITY_URGENT_AUDIO,
+				mSharedPrefs.getInt("sound_buffer_size_key", 2));
+		
+		mAudioProcessor.setSprectrumUpdateHandler(new UpdateSpectrumHandler(this,getMainLooper()));
+		ArrayList<String> skus = mAudioProcessor.checkSpecialEffects(this,purchaseManager);
+		if (!skus.isEmpty()){
+			for (String sku:skus){
+				PurchaseDialog dialog = new PurchaseDialog()
+						.setPurchaseManager(purchaseManager)
+						.setAudioProcessor(mAudioProcessor)
+						.setSku(sku);
+				dialog.show(getFragmentManager(), "Purchase " + sku);
+			}
+		}
+		mAudioProcessor.start();
+		procNoteHandler = mAudioProcessor.getNoteUpdateHandler();
+		
+		
 		// Set up an instance of SystemUiHider to control the system UI for
 		// this activity.
 		mSystemUiHider = SystemUiHider.getInstance(this, contentView,
@@ -375,8 +434,9 @@ public class PenelopeMainActivity extends Activity implements TextureView.Surfac
 		//mSettingsFragment = new SettingsFragment();
 	
 		
-		mPcamera = new Pcamera(this,(Button) findViewById(R.id.record_button));
-		//mPcamera.start(mFragmentViewGroup);
+		mPcamera = new Pcamera(this,(Button) findViewById(R.id.record_button),
+								mGLView, mAudioProcessor.getThru());
+		//mPcamera.start(mOpenGLViewGroup);
 		
 		mSharedPrefs.registerOnSharedPreferenceChangeListener(preferenceChangeListener);
 		//ActionBar mActionBar = getActionBar();
@@ -387,6 +447,14 @@ public class PenelopeMainActivity extends Activity implements TextureView.Surfac
 			mHideHandler.postDelayed(mToast1Runnable, AUTO_HIDE_DELAY_MILLIS);
 			mHideHandler.postDelayed(mToast2Runnable, 2*AUTO_HIDE_DELAY_MILLIS);
 		}
+		
+		mHideHandler.postDelayed(new Runnable() {
+
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				onAirButton.performClick();
+			}}, AUTO_HIDE_DELAY_MILLIS / 2);		
 	}
 	
 	int someDo;
@@ -407,7 +475,7 @@ public class PenelopeMainActivity extends Activity implements TextureView.Surfac
 		if (checkSleep(this)){
 			if (TOGGLE_ONAIR_CLICK){
 				findViewById(R.id.dummy_button).performClick();
-				mPcamera.stop(mFragmentViewGroup);
+				mPcamera.stop(mOpenGLViewGroup);
 			}
 		}
 	}
@@ -436,7 +504,7 @@ public class PenelopeMainActivity extends Activity implements TextureView.Surfac
 		super.onStop();
 		//mAudioOnAir.StopAudio();
 		mAudioProcessor.stopAudio();
-		mPcamera.stop(mFragmentViewGroup);
+		mPcamera.stop(mOpenGLViewGroup);
 	}
 	
 	
@@ -447,6 +515,8 @@ public class PenelopeMainActivity extends Activity implements TextureView.Surfac
 		mAudioProcessor.releaseAudio();
 		mAudioProcessor.quit();
 		//mUsbAudioManager.close(this);
+		purchaseManager.unbind();
+
 	}
 	
 	@Override
@@ -456,7 +526,7 @@ public class PenelopeMainActivity extends Activity implements TextureView.Surfac
 		if (TOGGLE_ONAIR_CLICK){
 			startAudio();
 			if (RECORD_MODE) { //TODO change this to and record
-			mPcamera.start(mFragmentViewGroup);
+			mPcamera.start(mOpenGLViewGroup);
 			}
 		}
 	}
@@ -471,7 +541,7 @@ public class PenelopeMainActivity extends Activity implements TextureView.Surfac
 				mAudioProcessor.startAudio(mSharedPrefs.getBoolean("enable_reverb_key", true),
 						mSharedPrefs.getBoolean("invert_audio_key", false), 
 						mSharedPrefs.getInt("sound_buffer_size_key", 2),
-						((float) mSharedPrefs.getInt("sound_wet_dry_key", 50)/100.0f));
+						((float) mSharedPrefs.getInt("sound_wet_dry_key", 92)/100.0f));
 				
 			}
 			
@@ -606,7 +676,7 @@ public class PenelopeMainActivity extends Activity implements TextureView.Surfac
 				
 				//findViewById(R.id.fullscreen_content);
 				//setContentView(R.layout.activity_onair);
-				mFragmentViewGroup.addView(mGLView);
+				mOpenGLViewGroup.addView(mGLView);
 				findViewById(R.id.fullscreen_content).animate()
 					.alpha(0f)
 					.setDuration(AUTO_HIDE_DELAY_MILLIS)
@@ -636,7 +706,7 @@ public class PenelopeMainActivity extends Activity implements TextureView.Surfac
 					.setDuration(AUTO_HIDE_DELAY_MILLIS/3)
 					.setListener(null);
 				//mGLView.removeOnTouchListener(mGLView.listenForTouch);
-				mFragmentViewGroup.removeView(mGLView);
+				mOpenGLViewGroup.removeView(mGLView);
 				
 				mAudioProcessor.stopAudio();
 				
@@ -652,13 +722,15 @@ public class PenelopeMainActivity extends Activity implements TextureView.Surfac
 		public boolean onMenuItemClick(MenuItem item) {
 			RECORD_MODE = !RECORD_MODE;
 			if (RECORD_MODE) {
-				mPcamera.start(mFragmentViewGroup);
+				mPcamera.start(mOpenGLViewGroup);
 				findViewById(R.id.record_button).setVisibility(View.VISIBLE);
-				new UpSaleDialog(R.string.dialog_penelope_full_messsage_record)
-					.show(getFragmentManager(),"PaidForVersionDialog");
+				UpSaleDialog.BuildUpSaleDialog(
+						R.string.dialog_penelope_full_messsage_record)
+						.show(getFragmentManager(),"PaidForVersionDialog");
 			} else {
-				mPcamera.stop(mFragmentViewGroup);
+				mPcamera.stop(mOpenGLViewGroup);
 				findViewById(R.id.record_button).setVisibility(View.GONE);
+				
 			}
 			return true;
 		}
@@ -683,7 +755,10 @@ public class PenelopeMainActivity extends Activity implements TextureView.Surfac
 	    // This will be called either automatically for you on 2.0
 	    // or later, or by the code above on earlier versions of the
 	    // platform.
-		if (mSystemUiHider.isVisible()){
+		if (mFragmentViewGroup.getVisibility() == View.VISIBLE){
+			mSystemUiHider.enable();
+			mFragmentViewGroup.setVisibility(View.GONE);
+		} else if (mSystemUiHider.isVisible()){
 			mSystemUiHider.hide();
 		} else if (TOGGLE_ONAIR_CLICK) {
 			findViewById(R.id.dummy_button).performClick();
@@ -748,6 +823,17 @@ public class PenelopeMainActivity extends Activity implements TextureView.Surfac
 			Intent intent = new Intent(this, SettingsActivity.class);	
 			intent.putExtra(EXTRA_MESSAGE,  R.xml.help);
 			startActivity(intent);
+		} else if (item.getItemId()==R.id.options_menu_special_efects) {
+			//Intent intent = new Intent(this, SpecialEffects.class);
+			mSettingsFragment = new SettingsFragment().setXmlId(R.xml.special_effects);
+			mSettingsFragment.setPurchaseManager(purchaseManager)
+					.setAudioProcessor(mAudioProcessor);
+			getFragmentManager().beginTransaction()
+				.replace(R.id.fragment_container, mSettingsFragment)
+				.commit();
+			mFragmentViewGroup.setVisibility(View.VISIBLE);
+			mSystemUiHider.hide();
+			mSystemUiHider.disable();
 		}
 		
 		return false;
@@ -888,6 +974,41 @@ public class PenelopeMainActivity extends Activity implements TextureView.Surfac
 		}
 	};
 	
+//*
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) { 
+		
+		if (requestCode == purchaseManager.pitchCorrect_RequestCode) {           
+			int responseCode = data.getIntExtra("RESPONSE_CODE", 0);
+			String purchaseData = data.getStringExtra("INAPP_PURCHASE_DATA");
+			String dataSignature = data.getStringExtra("INAPP_DATA_SIGNATURE");
+			
+			if (resultCode == RESULT_OK) {
+				try {
+					JSONObject jo = new JSONObject(purchaseData);
+					String msg = getString(R.string.dialog_purchase1) +
+							jo.getString("productId") + getString(R.string.dialog_purchase2);
+				
+					Toast.makeText(mContext, msg, Toast.LENGTH_LONG).show();
+					mAudioProcessor.setPitchCorrect(true);
+					
+				}
+				catch (JSONException e) {
+					Toast.makeText(mContext, R.string.dialog_purchase_fail, Toast.LENGTH_LONG).show();
+					// uncheck the box
+					mAudioProcessor.setPitchCorrect(false);
+					mSettingsFragment.checkPref.setChecked(false);
+					e.printStackTrace();
+				}
+			} else {
+				Toast.makeText(mContext, R.string.dialog_purchase_fail, Toast.LENGTH_LONG).show();
+				// uncheck the box
+				mAudioProcessor.setPitchCorrect(false);
+				mSettingsFragment.checkPref.setChecked(false);
+			}
+		}
+	}
+	//*/
 }
 
 

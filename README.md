@@ -5,15 +5,16 @@ Android App for Audio Processing
 
 
 !***************************************************************8
-!***
-!***  Most Important!!!!!
-!***
-!*** Please Do Not Copy this code for any reason. It is not good.
-!*** All code contained in this project is written by Joe Walter, 
-!*** All rights reserved.
-!***
-!***
-!*** Thank you.
+    Unless explicitly stated all files in PenelopFree are free software: 
+    you can redistribute it and/or modify it under the terms of the 
+    GNU General Public License as published by the Free Software 
+    Foundation, either version 3 of the License, or (at your option) 
+    any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 !***************************************************************8
 
 

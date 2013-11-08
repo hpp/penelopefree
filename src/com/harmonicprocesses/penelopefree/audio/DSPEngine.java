@@ -1,4 +1,17 @@
+/***
+ *  DSPEngine contains audio signal processing algorithms which
+ * may be of proprietary value. As such I, Joseph Mark Walter,
+ * claim these algorithms as my own invention. 
+ * 
+ *  The intellectual property in these files are being made public
+ * via Github repositories on the date timestamped on the commit 
+ * logs. If a patent has not been filed to protect IP one year 
+ * following the first commit featuring new IP. Said IP falls under
+ * public domain.  
+ */
 package com.harmonicprocesses.penelopefree.audio;
+
+
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,6 +20,7 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Array;
 
 import com.harmonicprocesses.penelopefree.R;
+import com.hpp.dsp.PitchCorrection;
 
 
 import android.content.Context;
@@ -23,7 +37,8 @@ public class DSPEngine {
 	private float[] realSpectrum;
 	private int[] ladderIndex= {0,0,0,0,0,0,0,0}, partNoteFFTIndex;
 	public final static int numCoeffs = 3, numFilters = 96;
-	private int sampleFreq, bufferSize;
+	public static final double baseNote = 55.0;
+	private int sampleFreq, bufferSize, first=24, last=72;
 	private int[][] twiddleIdx = new int[12*8][2];
 	private int[][] phaseCirBuffer;
 	private float[] bCoeffs = {0.2928932188134524f, 0.5857864376269047f, 0.2928932188134524f};
@@ -31,6 +46,7 @@ public class DSPEngine {
 	private double[][] coeffsA, coeffsB, filterPad;
 	private double[] oldSamples;
 	private Context mContext;
+	private PitchCorrection mPitchCorrection;
 	
 	
 	public DSPEngine(int BufferSize,int sampleRate, Context context){
@@ -45,6 +61,8 @@ public class DSPEngine {
 		coeffsB = readCoeffFile(R.raw.coeffs_b_36);
 		filterPad = new double[numFilters][numCoeffs];
 		oldSamples = new double[numCoeffs];
+		mPitchCorrection = new PitchCorrection(numFilters,
+				baseNote,AudioConstants.AMPLITUDE_THRESHOLD);
 		
 		
 	}
@@ -520,7 +538,7 @@ public class DSPEngine {
 		samples = null; //GC
 		
 		//filter buffered samples
-		for (int i = 24; i < 72; i++){
+		for (int i = first; i < last; i++){
 			output[i] = filter(input, coeffsB[i], coeffsA[i], i);
 		}
 		
@@ -547,7 +565,7 @@ public class DSPEngine {
 	 * @param k, the key index of the filter
 	 * @return amplitude of the filter
 	 */
-	private float filter(double[] samples, double[] b, double[] a, int k) {
+	public float filter(double[] samples, double[] b, double[] a, int k) {
 		maxAmplitude = 0;
 		l = b.length; 
 		
@@ -618,6 +636,17 @@ public class DSPEngine {
 	public Context getContext() {
 		
 		return mContext;
+	}
+
+	public float[] getPitchCorrectBuffer(float[] new_samples, float[] spectrum) {
+		int len = new_samples.length;
+		mPitchCorrection.next(len,spectrum);
+		for (int i = 0; i<spectrum.length; i++){
+			for (int j = 0; j< new_samples.length; j++){
+				new_samples[j] += mPitchCorrection.timeSignals[i][j];
+			}
+		}
+		return new_samples;
 	}
 	
 }

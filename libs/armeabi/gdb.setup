@@ -1,0 +1,2 @@
+set solib-search-path ./obj/local/armeabi
+directory /media/5b317046-147a-42ee-aec1-f73caf1922c5/home/kloud9/verkspace/adt-bundle-linux-x86_64-20130729/ndk/platforms/android-8/arch-arm/usr/include jni /media/5b317046-147a-42ee-aec1-f73caf1922c5/home/kloud9/verkspace/adt-bundle-linux-x86_64-20130729/ndk/sources/cxx-stl/system

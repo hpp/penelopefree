@@ -7,6 +7,8 @@ import com.harmonicprocesses.penelopefree.R;
 import com.harmonicprocesses.penelopefree.audio.AudioThru.OnNewSamplesReceivedUpdateListener;
 import com.hpp.billing.PurchaseDialog;
 import com.hpp.billing.PurchaseManager;
+import com.hpp.dsp.Filter;
+import com.hpp.dsp.Wavelet;
 
 import android.app.Activity;
 import android.content.Context;
@@ -24,13 +26,13 @@ public class AudioProcessor extends HandlerThread{
 	//private float[] inputBuffer;
 	private int floatBufferSize;
 	public int bufferSize;
-	private static int sampleRate = AudioConstant.sampleRate;
+	private static int sampleRate = AudioConstants.sampleRate;
 	private static String TAG = "com.hpp.penny.AudioProcessor";
 	Context mContext;
 	
 	private AudioThru mAudioThru;
 	public DSPEngine dsp;
-	public volatile boolean boolPitchCorrectEnabled;
+	public volatile boolean boolPitchCorrectEnabled, boolToneGenerateEnable = false;
 	public volatile float pitchCorrectLevel;
 	private Handler spectrumUpdateHandler = null, noteUpdateHandler = null,
 			processBufferUpdateHandler = null;
@@ -40,11 +42,11 @@ public class AudioProcessor extends HandlerThread{
 
 	public AudioProcessor(Context context, int audioProcessorPriority, 
 			int audioThruPriority,	int buffSize) {
-		super(AudioConstant.AudioProcessorThreadName, audioProcessorPriority);
+		super(AudioConstants.AudioProcessorThreadName, audioProcessorPriority);
 		mAudioThru = new AudioThru(context, audioThruPriority, buffSize);
-		bufferSize = AudioConstant.getBufferSize(buffSize);
-		floatBufferSize = AudioConstant.getFloatBufferSize(buffSize);
-		dsp = new DSPEngine(floatBufferSize/2, AudioConstant.sampleRate, context);
+		bufferSize = AudioConstants.getBufferSize(buffSize);
+		floatBufferSize = AudioConstants.getFloatBufferSize(buffSize);
+		dsp = new DSPEngine(floatBufferSize/2, AudioConstants.sampleRate, context);
 	}
 	
 	public AudioProcessor getProcessor(){
@@ -103,7 +105,7 @@ public class AudioProcessor extends HandlerThread{
 			int buffSize, float Wet){
 		synchronized(mAudioThru){
 			
-			int FloatBufferSize = AudioConstant.getFloatBufferSize(buffSize);
+			int FloatBufferSize = AudioConstants.getFloatBufferSize(buffSize);
 			if (FloatBufferSize != floatBufferSize){
 				floatBufferSize = FloatBufferSize;
 				dsp.setBufferSize(floatBufferSize/2); //downsampled to reduce dsp engine wear and tear
@@ -161,25 +163,31 @@ public class AudioProcessor extends HandlerThread{
 	 */
 	
 	float[] spectrum, proc_buff, processedBuffer;
+	Wavelet wavelet = null;
 	
 	private void onNewSamples(float[] in_buff) {
 		// this could all be an async task
-		proc_buff = downSample(in_buff);
+		/*proc_buff = downSample(in_buff);
 		if (doubleDown){
 			proc_buff = doubleDownSample(proc_buff);
 		}
 		in_buff = null; //GC
 		
+		/*
 		try {
 			spectrum = dsp.filterSamples(proc_buff);
 		} catch (Exception e) {
 			Log.d(TAG,e.getMessage());
 			spectrum = new float[DSPEngine.numFilters];
 		}
-		onSpectrumReady(spectrum);
+		//*/
+		if (wavelet==null) wavelet = new Wavelet();
+		processedBuffer=wavelet.transform(in_buff,0);
+		
+		onSpectrumReady(wavelet.getSpectrum());
 		
 		// this is the only time sensitive 
-		processedBuffer = createProcessBuffer(mNote, spectrum[mNote]);
+		//processedBuffer = createProcessBuffer(mNote, spectrum[mNote]);
 		synchronized(processBufferUpdateHandler){
 			Message msg = processBufferUpdateHandler.obtainMessage(); 
 			msg.obj = processedBuffer;
@@ -207,7 +215,7 @@ public class AudioProcessor extends HandlerThread{
 	private void onSpectrumReady(float[] spectrum){
 		synchronized (spectrumUpdateHandler){
 			if (spectrumUpdateHandler!=null){
-				int what = AudioConstant.AudioSpectrumWhat;
+				int what = AudioConstants.AudioSpectrumWhat;
 				Message msg = spectrumUpdateHandler.obtainMessage(what); 
 				msg.obj = spectrum;
 				spectrumUpdateHandler.removeMessages(what); //we only want the latest spectrum on the que
@@ -265,13 +273,18 @@ public class AudioProcessor extends HandlerThread{
 
 	int len;
 	float[] down_buff;
+	//coeffs for lp quarter filter
+	double[] aCoeffs = AudioConstants.quarterFilterACoeffs,
+			bCoeffs= AudioConstants.quarterFilterBCoeffs;
+	Filter filter = null;
 	private float[] downSample(float[] in_buff) {
 		if (len!=in_buff.length/2){
 			len = in_buff.length/2;
 			down_buff=null;
 		}
 		if (down_buff==null) {down_buff = new float[len];}
-		
+		if (filter==null){filter = new Filter(aCoeffs.length,in_buff.length);}
+		in_buff = filter.filter(in_buff,bCoeffs,aCoeffs);
 		for (int i = 0; i<len; i++){
 			down_buff[i] = (in_buff[2*i]+in_buff[2*i+1])/2.0f;
 		}
@@ -294,11 +307,24 @@ public class AudioProcessor extends HandlerThread{
 	}
 	
 	float[] proc_sample;
-	double baseNote = 55.0; 
+	double baseNote = DSPEngine.baseNote; 
 	double	freqControl = baseNote * Math.pow(2.0, (double) baseNote / 12.0 );
+	
 
 	private float[] createProcessBuffer(int note, float amp){
 		if (proc_sample==null) {proc_sample = new float[floatBufferSize];}
+		if (boolToneGenerateEnable) {
+			proc_sample = generateTone(note,amp);
+		} else {
+			proc_sample = new float[floatBufferSize]; //clear samples
+		}
+		
+		if (boolPitchCorrectEnabled) {proc_sample = dsp.getPitchCorrectBuffer(proc_sample, spectrum);}
+		
+		return proc_sample;
+	}
+
+	private float[] generateTone(int note, float amp) {
 		freqControl = baseNote * Math.pow(2.0, (double) note / 12.0 );
 		
 		

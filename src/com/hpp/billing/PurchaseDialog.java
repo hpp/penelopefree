@@ -110,14 +110,19 @@ public class PurchaseDialog extends DialogFragment{
 				} else {
 					Toast.makeText(pm.mContext, getString(R.string.dialog_purchase_error) + 
 							pm.pitchCorrect, Toast.LENGTH_LONG).show();
-					sp.checkPref.setChecked(false);
+					if (sp!=null){
+						sp.checkPref.setChecked(false);
+					}
 				}
 				
 			} else {
 				Toast.makeText(pm.mContext, getString(R.string.dialog_purchase_tries_exhausted1) + 
-						sku + getString(R.string.dialog_purchase_tries_exhausted2), 
+						" " + sku + " " + getString(R.string.dialog_purchase_tries_exhausted2), 
 						Toast.LENGTH_LONG).show();
-				sp.checkPref.setChecked(false);
+				if (sp!=null){
+					sp.checkPref.setChecked(false);
+				}
+				
 			}
 		}
 	};

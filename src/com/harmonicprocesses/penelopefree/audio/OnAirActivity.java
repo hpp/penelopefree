@@ -5,8 +5,10 @@ import com.harmonicprocesses.penelopefree.R.id;
 import com.harmonicprocesses.penelopefree.R.layout;
 import com.harmonicprocesses.penelopefree.R.xml;
 import com.harmonicprocesses.penelopefree.openGL.MyGLSurfaceView;
+import com.harmonicprocesses.penelopefree.openGL.MyGLSurfaceViewLegacy;
 import com.harmonicprocesses.penelopefree.util.SystemUiHider;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -175,7 +177,7 @@ public class OnAirActivity extends Activity {
 		
 		// Create instance on AudioOnAir
 		//mAudioOnAir = new AudioOnAir((Button) findViewById(R.id.dummy_button), (TextView) findViewById(R.id.fullscreen_content));
-		mGLView = new MyGLSurfaceView(this);
+		mGLView = new MyGLSurfaceViewLegacy(this);
 	
         // Display the fragment as the main content.
         //getFragmentManager().beginTransaction()
@@ -266,6 +268,7 @@ public class OnAirActivity extends Activity {
 	 * Remove the UI's hide routine when the options menu is expanded
 	 * and hide UI when options menu is collapsed.
 	 */
+	@SuppressLint("NewApi")
 	private MenuItem.OnActionExpandListener mOptionsExpandListener = new MenuItem.OnActionExpandListener() {
 		
 		@Override

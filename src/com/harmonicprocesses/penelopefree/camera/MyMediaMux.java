@@ -3,7 +3,7 @@ package com.harmonicprocesses.penelopefree.camera;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import com.harmonicprocesses.penelopefree.audio.AudioConstant;
+import com.harmonicprocesses.penelopefree.audio.AudioConstants;
 import com.harmonicprocesses.penelopefree.camera.BufferEvent.CodecBufferObserver;
 import com.harmonicprocesses.penelopefree.camera.BufferEvent.CodecBufferReadyListener;
 import com.harmonicprocesses.penelopefree.camera.MyMediaCodec.OnBufferReadyListener;
@@ -16,15 +16,17 @@ import android.media.MediaCodec.BufferInfo;
 import android.media.MediaFormat;
 import android.media.MediaMuxer;
 import android.support.v4.media.*;
+import android.util.Log;
 import android.media.MediaMuxer.OutputFormat;
 import android.os.Build;
 
-@SuppressLint("NewApi")
+@TargetApi(18)
 public class MyMediaMux {
 	MediaMuxer muxer = null;
 	int audioTrackIndex, videoTrackIndex;
-	final int bufferSize = AudioConstant.defaultBufferSize*16;
+	final int bufferSize = AudioConstants.defaultBufferSize*16;
 	CodecBufferObserver bufferObserver;
+	protected boolean muxerStarted;
 				
 	public MyMediaMux(MyMediaCodec audioCodec, MyMediaCodec videoCodec, CodecBufferObserver observer){
 		try {
@@ -35,42 +37,68 @@ public class MyMediaMux {
 			e.printStackTrace();
 		}
 		
-		MediaFormat audioFormat = audioCodec.codec.getOutputFormat();
-		MediaFormat videoFormat = videoCodec.codec.getOutputFormat();
+		if (audioCodec!=null){
+			MediaFormat audioFormat = audioCodec.codec.getOutputFormat();
+			//MediaFormat videoFormat = videoCodec.codec.getOutputFormat();
+			audioTrackIndex = muxer.addTrack(audioFormat);
+		}
 		
-		audioTrackIndex = muxer.addTrack(audioFormat);
-		videoTrackIndex = muxer.addTrack(videoFormat);
+		if (videoCodec!=null){
+			//videoTrackIndex = muxer.addTrack(videoFormat);
+			muxerStarted = false; //TODO if only audio start right away
+		}
 		
-		boolean finished = false;
-		muxer.start();
 		bufferObserver = observer;
 		bufferObserver.add(onBufferReadyListener);
+	}
+	
+	public boolean addVideoTrack(MediaFormat videoFormat){
+		videoTrackIndex = muxer.addTrack(videoFormat);
+		
+		return false;
 	}
 	
 	public CodecBufferReadyListener onBufferReadyListener = new CodecBufferReadyListener(){
 		@Override
 		public boolean OnCodecBufferReady(ByteBuffer inputBuffer, 
-				boolean isAudioSample, BufferInfo bufferInfo) {
+				boolean isAudioSample, BufferInfo bufferInfo)  {
+			if (inputBuffer == null) {
+				Log.e("com.hpp.MyMediaMux","Encoded Buffer Null ");
+			}
 			
-			int currentTrackIndex = isAudioSample ? audioTrackIndex : videoTrackIndex;
-			muxer.writeSampleData(currentTrackIndex, inputBuffer, bufferInfo);
+			if ((bufferInfo.flags & MediaCodec.BUFFER_FLAG_CODEC_CONFIG) != 0){
+				//ignore
+				bufferInfo.size = 0;
+			}
 			
+			if (bufferInfo.size != 0){
+				if (!muxerStarted) {
+					Log.e("com.hpp.MyMediaMux","Trying to write data before muxer started");
+					return false;
+				}
+				
+				int currentTrackIndex = isAudioSample ? audioTrackIndex : videoTrackIndex;
+				muxer.writeSampleData(currentTrackIndex, inputBuffer, bufferInfo);
+			
+			}
+			return true;
+		}
+		
+		@Override
+		public boolean OnCodecBufferFormatChange(MediaFormat videoFormat){
+			videoTrackIndex = muxer.addTrack(videoFormat);
+			muxer.start();
+			muxerStarted = true;
 			return true;
 		}
 	};
 	
 	public void stop(){
 		bufferObserver.remove(onBufferReadyListener);
-		muxer.stop();
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2){
-			release();
+		if (muxerStarted){
+			muxer.stop();
+			muxer.release();
+			muxerStarted = false;
 		}
 	}
-	
-	@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
-	private void release(){
-		muxer.release();
-	}
-	
-	
 }

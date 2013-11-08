@@ -6,10 +6,13 @@ import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import com.harmonicprocesses.penelopefree.PenelopeMainActivity;
 import com.harmonicprocesses.penelopefree.R;
 import com.harmonicprocesses.penelopefree.audio.AudioThru;
 import com.harmonicprocesses.penelopefree.openGL.MyGLSurfaceView;
 import com.harmonicprocesses.penelopefree.settings.UpSaleDialog;
+import com.hpp.openGL.MyEGLWrapper;
+import com.hpp.openGL.SurfaceTextureManager;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -19,6 +22,7 @@ import android.app.FragmentManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.media.CamcorderProfile;
 import android.media.MediaCodec;
@@ -28,14 +32,22 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.IBinder;
+import android.os.Looper;
+import android.os.Parcel;
+import android.os.RemoteException;
 import android.util.Log;
 import android.view.Surface;
+import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class Pcamera {
@@ -48,21 +60,18 @@ public class Pcamera {
     Button captureButton;
     static int mCamId;
     private FragmentManager mFrag;
-    MediaCodec codec;
-    MyGLSurfaceView mGLView;
-    MyMediaCodec audioCodec;
-    MyMediaCodec videoCodec;
-    MyMediaMux mediaMux;
-    AudioThru mAudio;
+	private ViewGroup videoSurfaceViewGroup;
+	private CaptureManager captureManager=null;
     
 	
-	public Pcamera(Activity context, Button recordButton, MyGLSurfaceView surface,AudioThru audioThru) {
+	public Pcamera(Activity context, Button recordButton, MyGLSurfaceView mGLView, 
+			AudioThru audioThru, SurfaceView cameraSV) {
 		mContext = context;
 		mFrag = context.getFragmentManager();
+		captureManager = new CaptureManager(mContext,this,mGLView,audioThru,cameraSV);
 		captureButton = recordButton;
 		captureButton.setOnClickListener(RecordButtonListener);
-		mGLView = surface;
-		mAudio = audioThru;
+		
 				
 		if (!checkCameraHardware()) {
 			//TODO what if no camera
@@ -70,24 +79,49 @@ public class Pcamera {
 		
 		mCamera = getCameraInstance();
 
-		mCameraPreview = new CameraPreview(mContext, mCamera);
+		//mCameraPreview = new CameraPreview(mContext, mCamera);
 		//prepareVideoRecorder();
 	}
 	
-	public void start(ViewGroup vg){
+	private boolean prepCam(){
 		if (mCamera==null) {
 			mCamera = getCameraInstance();
 		}
-		if (mCameraPreview==null){
-			mCameraPreview = new CameraPreview(mContext, mCamera);
-		}
+		//if (mCameraPreview==null){
+		//	mCameraPreview = new CameraPreview(mContext, mCamera);
+		//}
+		return (mCamera!=null); 
+	}
+	
+	/*
+	public void start(ViewGroup vg){
+		prepCam();
 		//if (mMediaRecorder==null) {
 		//	prepareVideoRecorder();
 		//}
-		vg.addView(mCameraPreview);
+		videoSurfaceViewGroup = vg;
+		//videoSurfaceViewGroup.setDrawingCacheEnabled(true);
+		//videoSurfaceViewGroup.buildDrawingCache();
+		videoSurfaceViewGroup.addView(mCameraPreview);
+	}
+	//*/
+	void stopPreview(){
+		if (mCamera!=null)	mCamera.stopPreview();	
+	}
+	
+	
+	public boolean start(){
+		if (!prepCam()) {
+			Log.e(TAG,"failed to start camera");
+			return false;
+		}
+		//mCameraPreview.set
+		captureManager.prepareSurfaceTexture(mCamera);
+		return true;
 	}
 	
 	public void stop(FrameLayout vg) {
+		captureManager.releaseSurfaceTexture();
 		vg.removeView(mCameraPreview);
 		releaseMediaRecorder();
 		releaseCamera();
@@ -263,11 +297,7 @@ public class Pcamera {
              } else {
             	 
             	 /*/ initialize video camera
-            	 Bundle bundle = new Bundle();
-            	 bundle.putInt("messageId", R.string.dialog_penelope_full_messsage_capture);
-            	 UpSaleDialog dialog = new UpSaleDialog();
-            	 dialog.setArguments(bundle);
-            	 dialog.show(mFrag,"PaidForVersionDialog");
+            	 upSale();
             	 /*/
             	 AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
                  builder.setMessage("MediaRecord File Location = " +
@@ -304,26 +334,59 @@ public class Pcamera {
                  }
              }
          }
-
-			
-		};  
+	};  
 		
-		OnClickListener RecordButtonListener = new OnClickListener() {
+	OnClickListener RecordButtonListener = new OnClickListener() {
 
-			@Override
-			public void onClick(View v) {
-				if (isRecording) {
-					//stop
-					
-				} else {
-					BufferEvent.CodecBufferObserver observer = new BufferEvent().observer;
-					MyMediaCodec audioCodec = new MyMediaCodec(mCamId, true, mGLView, observer);					
-					MyMediaCodec videoCodec = new MyMediaCodec(mCamId, false, mGLView, observer);					
-					MyMediaMux mux = new MyMediaMux(audioCodec,videoCodec,observer);
-					mAudio.startRecord(observer);
-				}
+		@Override
+		public void onClick(View v) {
+			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2){
+				upSale();
+				return;
 			}
-		};
+			if (isRecording) {
+				//stop
+				isRecording = false; // stops the incoming video
+				captureManager.endCapture();
+				//releaseSurfaceTexture(); 
+				captureButton.setText("Record");
+			} else {
+				//start
+				isRecording = true;
+				/*
+				new Handler(Looper.getMainLooper()).post(
+					new Runnable(){
+						@Override
+						public void run() {
+							// This must be created on MainActivityThread
+							prepareSurfaceTexture();
+						}
+				});
+				//*/
+				
+				captureManager.beginCapture(videoSurfaceViewGroup,mCamId);
+				captureButton.setText("Stop");
+			}
+		}
+	};
 	
+	
+	private void upSale(){
+		Bundle bundle = new Bundle();
+		bundle.putInt("messageId", R.string.dialog_penelope_full_messsage_capture);
+		UpSaleDialog dialog = new UpSaleDialog();
+		dialog.setArguments(bundle);
+		dialog.show(mFrag,"PaidForVersionDialog");
+	}
+
+	
+
+	public Surface getRecordingSurface() {
+		return captureManager.getVideoSurface();
+	}
+
+	public MyEGLWrapper getEGLWrapper() {
+		return captureManager.getMyEGLWrapper();
+	}
 }
 

@@ -31,6 +31,7 @@ import com.harmonicprocesses.penelopefree.openGL.utils.SoundParticleHexBins;
 import com.harmonicprocesses.penelopefree.settings.SettingsActivity;
 import com.harmonicprocesses.penelopefree.renderscript.ScriptC_particleFilter;
 import com.harmonicprocesses.penelopefree.renderscript.ScriptField_particle;
+import com.hpp.openGL.MyEGLWrapper;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -53,6 +54,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Paint;
 import android.graphics.drawable.LevelListDrawable;
+import android.opengl.EGLContext;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLUtils;
@@ -132,11 +134,13 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     private ScriptC_particleFilter mScript;
     private SharedPreferences mSharedPrefs;
     public Accelmeter mAccelmeter;
+	private MyGLSurfaceView mGLSurfaceView;
     
     
     
-    public MyGLRenderer(Context context){
+    public MyGLRenderer(Context context, MyGLSurfaceView glSurfaceView){
     	mContext = context;
+    	mGLSurfaceView = glSurfaceView;
     	mSharedPrefs = PreferenceManager.getDefaultSharedPreferences(mContext);
         mLabelPaint = new Paint();
         mLabelPaint.setTextSize(32);
@@ -261,8 +265,12 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
 	@Override
     public void onDrawFrame(GL10 gl) {
+		drawFrame();
+		
+    }
 
-        // Draw background color
+	public void drawFrame() {
+		// Draw background color
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
 
         // Set the camera position (View matrix)
@@ -328,9 +336,11 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         //nextParticleVBO();
         //mParticles.draw(mMVPMatrix, particleVBO);
         
-    }
+		
+	}
+		
 
-    @Override
+	@Override
     public void onSurfaceChanged(GL10 unused, int width, int height) {
         // Adjust the viewport based on geometry changes,
         // such as screen rotation
@@ -402,6 +412,8 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 	    //mOutAllocation.;
 	    
 	}
+
+
     
        
 }

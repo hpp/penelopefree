@@ -6,19 +6,21 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.android.vending.billing.IInAppBillingService;
 import com.harmonicprocesses.penelopefree.R;
-import com.harmonicprocesses.penelopefree.audio.AudioConstant;
+import com.harmonicprocesses.penelopefree.audio.AudioConstants;
 import com.harmonicprocesses.penelopefree.audio.AudioOnAir;
 import com.harmonicprocesses.penelopefree.audio.AudioProcessor;
 import com.harmonicprocesses.penelopefree.audio.DSPEngine;
 import com.harmonicprocesses.penelopefree.audio.OnAir;
 import com.harmonicprocesses.penelopefree.camera.Pcamera;
 import com.harmonicprocesses.penelopefree.openGL.MyGLSurfaceView;
+import com.harmonicprocesses.penelopefree.openGL.MyGLSurfaceViewLegacy;
 import com.harmonicprocesses.penelopefree.settings.HelpActivity;
 import com.harmonicprocesses.penelopefree.settings.SettingsActivity;
 import com.harmonicprocesses.penelopefree.settings.SettingsFragment;
@@ -29,6 +31,7 @@ import com.harmonicprocesses.penelopefree.util.SystemUiHider;
 import com.harmonicprocesses.penelopefree.util.SystemUiHiderBase;
 import com.hpp.billing.PurchaseDialog;
 import com.hpp.billing.PurchaseManager;
+import com.hpp.openGL.MyEGLWrapper;
 //import com.harmonicprocesses.penelopefree.settings.SubSettingsFragment;
 
 import android.animation.Animator;
@@ -37,6 +40,8 @@ import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.ActionBar.OnMenuVisibilityListener;
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningAppProcessInfo;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.PendingIntent;
@@ -77,6 +82,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.MotionEvent;
+import android.view.SurfaceView;
 import android.view.View;
 import android.view.TextureView;
 import android.view.ViewConfiguration;
@@ -226,6 +232,15 @@ public class PenelopeMainActivity extends Activity implements TextureView.Surfac
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		/*ActivityManager activityManager = (ActivityManager) this.getSystemService( ACTIVITY_SERVICE );
+	    List<RunningAppProcessInfo> procInfos = activityManager.getRunningAppProcesses();
+	    for(int i = 0; i < procInfos.size(); i++){
+	        if(procInfos.get(i).processName.equals("com.harmonicprocesses.penelopefree")) {
+	            Toast.makeText(getApplicationContext(), "Penelope Is Already Running", Toast.LENGTH_LONG).show();
+	            onDestroy();
+	        }
+	    }//*/
+		
 		// connect to Google Play Billing service
 		purchaseManager = new PurchaseManager(this);
 		
@@ -296,8 +311,9 @@ public class PenelopeMainActivity extends Activity implements TextureView.Surfac
 		onAirButton = (Button) findViewById(R.id.dummy_button); 
 		mFragmentViewGroup = (FrameLayout) findViewById(R.id.fragment_container);
 		mOpenGLViewGroup = (FrameLayout) findViewById(R.id.opengl_container);
-
-		mGLView = new MyGLSurfaceView(this);
+		final SurfaceView mCameraSurfaceView = new SurfaceView(mContext);
+		mGLView = new MyGLSurfaceViewLegacy(mContext);
+		
 		mAudioProcessor = new AudioProcessor(this,
 				android.os.Process.THREAD_PRIORITY_AUDIO,
 				android.os.Process.THREAD_PRIORITY_URGENT_AUDIO,
@@ -316,6 +332,9 @@ public class PenelopeMainActivity extends Activity implements TextureView.Surfac
 		}
 		mAudioProcessor.start();
 		procNoteHandler = mAudioProcessor.getNoteUpdateHandler();
+
+		mPcamera = new Pcamera(this,(Button) findViewById(R.id.record_button),
+				mGLView, mAudioProcessor.getThru(), mCameraSurfaceView);
 		
 		
 		// Set up an instance of SystemUiHider to control the system UI for
@@ -427,15 +446,14 @@ public class PenelopeMainActivity extends Activity implements TextureView.Surfac
 		//		(TextView) findViewById(R.id.fullscreen_content), 
 		//		mUsbAudioManager);
 		
-		mGLTextureView = new OpenGLTextureViewSample(this);
-		mGLTextureView.setSurfaceTextureListener(this);
+		//mGLTextureView = new OpenGLTextureViewSample(this);
+		//mGLTextureView.setSurfaceTextureListener(this);
 		
         // 
 		//mSettingsFragment = new SettingsFragment();
 	
 		
-		mPcamera = new Pcamera(this,(Button) findViewById(R.id.record_button),
-								mGLView, mAudioProcessor.getThru());
+		
 		//mPcamera.start(mOpenGLViewGroup);
 		
 		mSharedPrefs.registerOnSharedPreferenceChangeListener(preferenceChangeListener);
@@ -457,16 +475,6 @@ public class PenelopeMainActivity extends Activity implements TextureView.Surfac
 			}}, AUTO_HIDE_DELAY_MILLIS / 2);		
 	}
 	
-	int someDo;
-	
-
-	
-	/**********
-	@Override
-	public void onClick(View v){
-		
-		someDo = 1;
-	}//*******/
 	
 	@Override
 	protected void onPause(){
@@ -526,7 +534,8 @@ public class PenelopeMainActivity extends Activity implements TextureView.Surfac
 		if (TOGGLE_ONAIR_CLICK){
 			startAudio();
 			if (RECORD_MODE) { //TODO change this to and record
-			mPcamera.start(mOpenGLViewGroup);
+			//mPcamera.start(mOpenGLViewGroup);
+			mPcamera.start();
 			}
 		}
 	}
@@ -676,6 +685,7 @@ public class PenelopeMainActivity extends Activity implements TextureView.Surfac
 				
 				//findViewById(R.id.fullscreen_content);
 				//setContentView(R.layout.activity_onair);
+				
 				mOpenGLViewGroup.addView(mGLView);
 				findViewById(R.id.fullscreen_content).animate()
 					.alpha(0f)
@@ -722,7 +732,11 @@ public class PenelopeMainActivity extends Activity implements TextureView.Surfac
 		public boolean onMenuItemClick(MenuItem item) {
 			RECORD_MODE = !RECORD_MODE;
 			if (RECORD_MODE) {
-				mPcamera.start(mOpenGLViewGroup);
+				//mPcamera.start(mOpenGLViewGroup);
+				if (!mPcamera.start()){
+					RECORD_MODE = !RECORD_MODE;
+					return true;
+				}
 				findViewById(R.id.record_button).setVisibility(View.VISIBLE);
 				UpSaleDialog.BuildUpSaleDialog(
 						R.string.dialog_penelope_full_messsage_record)

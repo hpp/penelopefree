@@ -55,7 +55,7 @@
 	
 	<string name="dialog_penelope_full_messsage_usb">Our apologies, USB Audio IO is only supported in the full version at this time.</string>
 	<string name="dialog_penelope_full_messsage_record">Our apologies, Recording is only supported in the full version at this time.</string>
-	<string name="dialog_penelope_full_messsage_capture">Our apologies, Recording is only supported in the full version. A work around may be to use a third party screen capture app.</string>
+	
 	<string name="dialog_button_next_time">Next Time</string>
 	<string name="dialog_button_more_info">More Info</string>
 	
@@ -106,4 +106,6 @@
 	<string name="dialog_purchase_tries_exhausted2"> to continue.</string>
 	<string name="dialog_purchase_error">ERROR trying </string>
 	
+	<!--  From Here on out translations need to be changed -->
+	<string name="dialog_penelope_full_messsage_capture">Our apologies, Recording is only supported in Android 4.3 (API_18). A work around may be to use a third party screen capture app.</string>
 </resources>

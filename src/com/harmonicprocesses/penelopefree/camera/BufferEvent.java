@@ -5,12 +5,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.media.MediaCodec.BufferInfo;
+import android.media.MediaFormat;
 
 public class BufferEvent {
 	CodecBufferObserver observer;
 	
 	public interface CodecBufferReadyListener{
 		public boolean OnCodecBufferReady(ByteBuffer inBuff,boolean isAudio,BufferInfo buffInfo);
+
+		public boolean OnCodecBufferFormatChange(MediaFormat videoFormat);
 	}
 	
 	public interface AudioBufferListener {
@@ -39,6 +42,13 @@ public class BufferEvent {
 				  listener.OnCodecBufferReady(inBuff,isAudio,buffInfo);
 			  }
 		  }
+		  
+		  public void fireCodecBufferFormatChange(MediaFormat format){
+			  for (CodecBufferReadyListener listener:codecListeners) {
+				  listener.OnCodecBufferFormatChange(format);
+			  }
+		  }
+		  
 		  public void fireAudioBufferReady(ByteBuffer newBuff){
 			  for (AudioBufferListener listener:audioListeners) {
 				  listener.OnAudioBufferReady(newBuff);

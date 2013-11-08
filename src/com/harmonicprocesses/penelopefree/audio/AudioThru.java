@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 
 import com.harmonicprocesses.penelopefree.PenelopeMainActivity;
 import com.harmonicprocesses.penelopefree.camera.BufferEvent;
+import com.harmonicprocesses.penelopefree.camera.BufferEvent.CodecBufferObserver;
 
 import android.app.Activity;
 import android.content.Context;
@@ -37,9 +38,9 @@ import android.view.View;
  */
 public class AudioThru extends HandlerThread {
 	//some useful constants
-	private static int sampleRate = AudioConstant.sampleRate;
-	private static int numBytePerFrame = AudioConstant.numBytePerFrame;
-	private static int numChannels = AudioConstant.numChannels;
+	private static int sampleRate = AudioConstants.sampleRate;
+	private static int numBytePerFrame = AudioConstants.numBytePerFrame;
+	private static int numChannels = AudioConstants.numChannels;
 	private static int bufferSizeStatic = 1024;
 
 	
@@ -64,13 +65,14 @@ public class AudioThru extends HandlerThread {
 	//Handlers
 	Handler processBufferUpdateHandler = null;
 	Context mContext;
+	private Handler audioCaptureHandler = null;
 		
 	
 	public AudioThru(Context context, int priority, int buffSize){
-		super(AudioConstant.AudioThruThreadName,priority);
+		super(AudioConstants.AudioThruThreadName,priority);
 		mContext = context;
-		bufferSize = AudioConstant.getBufferSize(buffSize);
-		floatBufferSize = AudioConstant.getFloatBufferSize(buffSize);
+		bufferSize = AudioConstants.getBufferSize(buffSize);
+		floatBufferSize = AudioConstants.getFloatBufferSize(buffSize);
 		inputByteBuffer = ByteBuffer.allocateDirect(bufferSize);
 		processBuffer = new float[floatBufferSize];
 		//Setup setup Audio
@@ -140,11 +142,11 @@ public class AudioThru extends HandlerThread {
 	
 	public void startAudioThru(boolean ReverbOn, boolean InvertAudioOn, 
 			int buffSize, float Wet){
-		int BufferSize = AudioConstant.getBufferSize(buffSize);
+		int BufferSize = AudioConstants.getBufferSize(buffSize);
 		if (BufferSize!=bufferSize){
 			releaseAudio();
 			bufferSize=BufferSize;
-			floatBufferSize = AudioConstant.getFloatBufferSize(buffSize);
+			floatBufferSize = AudioConstants.getFloatBufferSize(buffSize);
 			setUpAudio();
 			init();
 		}
@@ -156,12 +158,14 @@ public class AudioThru extends HandlerThread {
 		mAudioTrack.play();
 	}
 	
-	public void startRecord(BufferEvent.CodecBufferObserver Observer){
+	public void startRecord(BufferEvent.CodecBufferObserver Observer, Handler handler){
 		observer = Observer;
+		audioCaptureHandler = handler;
 	}
 	
 	public void stopRecord(){
 		observer = null;
+		audioCaptureHandler.removeMessages(1);
 	}
 	
 	public void stopAudioThru(){
@@ -271,6 +275,10 @@ public class AudioThru extends HandlerThread {
 	float[] out_buff;
 	float procScalar;
 	private float[] calcOutput(float[] in_buff, float[] proc_buff) {
+		if (proc_buff == null) {
+			proc_buff = new float[in_buff.length];
+		}
+		
 		if (len!=in_buff.length){
 			len = in_buff.length;
 			out_buff = new float[len];
@@ -300,16 +308,14 @@ public class AudioThru extends HandlerThread {
 	}
 	
 	private void record(final ByteBuffer newBuff) {
-		if (observer==null){return;}
-		((Activity) mContext).runOnUiThread(new Runnable() {
-
-			@Override
-			public void run() {
-				observer.fireAudioBufferReady(newBuff);
-			}
-		});
+		if (observer==null||audioCaptureHandler==null){return;}
+		Message msg = audioCaptureHandler.obtainMessage();
+		msg.obj = newBuff;
+		msg.what = 1;
+		audioCaptureHandler.sendMessage(msg);
 	}
-
+	
+	
 	/*==========================================================================
 	 * Utility Functions
 	 *==========================================================================
@@ -380,5 +386,6 @@ public class AudioThru extends HandlerThread {
         }
 		return out_byte_buff;
 	}
+
 
 }

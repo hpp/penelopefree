@@ -23,7 +23,7 @@ import android.os.Build;
 @TargetApi(18)
 public class MyMediaMux {
 	MediaMuxer muxer = null;
-	int audioTrackIndex, videoTrackIndex;
+	int audioTrackIndex = -1, videoTrackIndex = -1;
 	final int bufferSize = AudioConstants.defaultBufferSize*16;
 	CodecBufferObserver bufferObserver;
 	protected boolean muxerStarted;
@@ -52,11 +52,6 @@ public class MyMediaMux {
 		bufferObserver.add(onBufferReadyListener);
 	}
 	
-	public boolean addVideoTrack(MediaFormat videoFormat){
-		videoTrackIndex = muxer.addTrack(videoFormat);
-		
-		return false;
-	}
 	
 	public CodecBufferReadyListener onBufferReadyListener = new CodecBufferReadyListener(){
 		@Override
@@ -85,10 +80,17 @@ public class MyMediaMux {
 		}
 		
 		@Override
-		public boolean OnCodecBufferFormatChange(MediaFormat videoFormat){
-			videoTrackIndex = muxer.addTrack(videoFormat);
-			muxer.start();
-			muxerStarted = true;
+		public boolean OnCodecBufferFormatChange(MediaFormat format, boolean isAudio){
+			if (isAudio){
+				//audioTrackIndex = muxer.addTrack(format);
+				return true; //set when MyMediaMuxer is initiallized
+			} else {
+				videoTrackIndex = muxer.addTrack(format);
+			}
+			//if (audioTrackIndex>=0 && videoTrackIndex>=0){
+				muxer.start();
+				muxerStarted = true;
+			//}
 			return true;
 		}
 	};

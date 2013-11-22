@@ -70,7 +70,7 @@ public class Pcamera {
 		mFrag = context.getFragmentManager();
 		captureManager = new CaptureManager(mContext,this,mGLView,audioThru,cameraSV);
 		captureButton = recordButton;
-		captureButton.setOnClickListener(RecordButtonListener);
+		captureButton.setOnClickListener(CaptureButtonListener);
 		
 				
 		if (!checkCameraHardware()) {
@@ -81,6 +81,17 @@ public class Pcamera {
 
 		//mCameraPreview = new CameraPreview(mContext, mCamera);
 		//prepareVideoRecorder();
+	}
+	
+	/**
+	 * Set which mode to capture, either video or audio
+	 * 
+	 * @param videoMode, true of video, false for audio
+	 */
+	public void captureMode(boolean videoMode){
+		if (videoMode){
+			
+		}
 	}
 	
 	private boolean prepCam(){
@@ -336,7 +347,7 @@ public class Pcamera {
          }
 	};  
 		
-	OnClickListener RecordButtonListener = new OnClickListener() {
+	OnClickListener CaptureButtonListener = new OnClickListener() {
 
 		@Override
 		public void onClick(View v) {

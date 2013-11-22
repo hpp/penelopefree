@@ -106,12 +106,13 @@ public class SurfaceTextureManager
     /**
      * Draws the data from SurfaceTexture onto the current EGL surface.
      */
-    public ByteBuffer drawImage() {
+    public STextureRender drawImage(boolean updateTexImage) {
     	// Latch the data.
-        mTextureRender.checkGlError("before updateTexImage");
-        mSurfaceTexture.updateTexImage();
-        
-        return mTextureRender.drawFrame(mSurfaceTexture);
+    	if (updateTexImage){
+    		mTextureRender.checkGlError("before updateTexImage");
+    		mSurfaceTexture.updateTexImage();
+    	}
+        return mTextureRender;
     }
 
     @Override

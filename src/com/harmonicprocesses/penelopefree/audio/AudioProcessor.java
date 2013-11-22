@@ -167,25 +167,30 @@ public class AudioProcessor extends HandlerThread{
 	
 	private void onNewSamples(float[] in_buff) {
 		// this could all be an async task
-		/*proc_buff = downSample(in_buff);
-		if (doubleDown){
-			proc_buff = doubleDownSample(proc_buff);
+		boolean useWavelet = false; //still working on wavelet, reverting for release.
+		
+		if (!useWavelet){
+			proc_buff = downSample(in_buff);
+			if (doubleDown){
+				proc_buff = doubleDownSample(proc_buff);
+			}
+			in_buff = null; //GC ???
+
+			try {
+				spectrum = dsp.filterSamples(proc_buff);
+			} catch (Exception e) {
+				Log.d(TAG,e.getMessage());
+				spectrum = new float[DSPEngine.numFilters];
+			}
+			onSpectrumReady(spectrum);
+			
+		} else {	
+		
+			if (wavelet==null) wavelet = new Wavelet();
+			processedBuffer=wavelet.transform(in_buff,0);
+		
+			onSpectrumReady(wavelet.getSpectrum());
 		}
-		in_buff = null; //GC
-		
-		/*
-		try {
-			spectrum = dsp.filterSamples(proc_buff);
-		} catch (Exception e) {
-			Log.d(TAG,e.getMessage());
-			spectrum = new float[DSPEngine.numFilters];
-		}
-		//*/
-		if (wavelet==null) wavelet = new Wavelet();
-		processedBuffer=wavelet.transform(in_buff,0);
-		
-		onSpectrumReady(wavelet.getSpectrum());
-		
 		// this is the only time sensitive 
 		//processedBuffer = createProcessBuffer(mNote, spectrum[mNote]);
 		synchronized(processBufferUpdateHandler){

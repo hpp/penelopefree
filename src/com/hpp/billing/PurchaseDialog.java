@@ -6,6 +6,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -68,14 +69,32 @@ public class PurchaseDialog extends DialogFragment{
     	return this;
     }
     
+    public PurchaseDialog setMId2(int id){
+    	mId2 = id;
+    	return this;
+    }
+    
+    public PurchaseDialog setButton2(int id, DialogInterface.OnClickListener listener){
+    	button2id = id;
+    	listener2 = listener;
+    	return this;
+    }
+
+    public PurchaseDialog setButton1(int id, DialogInterface.OnClickListener listener) {
+    	button1id = id;
+    	listener1 = listener;
+		return this;
+	}
+
+    
 	@Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         // Use the Builder class for convenient dialog construction
 		Bundle bundle=getArguments();
 		//Activity act = getActivity();
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        String msg = getString(mId1) + pm.priceList.get(pm.skuList.indexOf(sku)) +
-        			getString(mId2);
+        String msg = getString(mId1) + " " + sku + "?\n\n" +
+        		pm.priceList.get(pm.skuList.indexOf(sku)) +	getString(mId2);
         builder.setMessage(msg)
             	.setPositiveButton(button1id, listener1);
         
@@ -153,6 +172,7 @@ public class PurchaseDialog extends DialogFragment{
 		dialog.setArguments(bundle);
 		return dialog;
 	}
+
 
 	
 }

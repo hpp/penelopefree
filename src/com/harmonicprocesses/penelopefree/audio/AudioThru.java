@@ -1,11 +1,19 @@
 package com.harmonicprocesses.penelopefree.audio;
 
 import java.lang.ref.WeakReference;
+import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.DoubleBuffer;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.nio.LongBuffer;
+import java.nio.ShortBuffer;
 
 import com.harmonicprocesses.penelopefree.PenelopeMainActivity;
 import com.harmonicprocesses.penelopefree.camera.BufferEvent;
 import com.harmonicprocesses.penelopefree.camera.BufferEvent.CodecBufferObserver;
+import com.harmonicprocesses.penelopefree.camera.MyMediaCodec;
 
 import android.app.Activity;
 import android.content.Context;
@@ -37,6 +45,7 @@ import android.view.View;
  *
  */
 public class AudioThru extends HandlerThread {
+
 	//some useful constants
 	private static int sampleRate = AudioConstants.sampleRate;
 	private static int numBytePerFrame = AudioConstants.numBytePerFrame;
@@ -52,7 +61,9 @@ public class AudioThru extends HandlerThread {
 	private Handler processorHandler = null, mAudioEventHandler = null;
 	
 	//buffers
-	private ByteBuffer inputByteBuffer;
+	private ByteBuffer inputByteBuffer; 
+	private AudioPacket[] audioCapturePacket = new AudioPacket[4];
+	private int captureBuffIdx = 0, captureFrameIdx = 0;
 	private float[] inputBuffer;
 	//private float[] outputBuffer;
 	private volatile float[] processBuffer;
@@ -161,11 +172,17 @@ public class AudioThru extends HandlerThread {
 	public void startRecord(BufferEvent.CodecBufferObserver Observer, Handler handler){
 		observer = Observer;
 		audioCaptureHandler = handler;
+		for (int i = 0; i< audioCapturePacket.length; i++){
+		audioCapturePacket[i] = new AudioPacket(i,ByteBuffer.allocateDirect(
+				(int) MyMediaCodec.pcm_bytes_per_mp4_frame));
+		audioCapturePacket[i].pcmBuff.mark(); //set mark to zero
+		}
+		
 	}
 	
 	public void stopRecord(){
 		observer = null;
-		audioCaptureHandler.removeMessages(1);
+		audioCaptureHandler.removeMessages(Audio_Capture_Handler_What);
 	}
 	
 	public void stopAudioThru(){
@@ -187,8 +204,8 @@ public class AudioThru extends HandlerThread {
 		wetDry = lev;
 	}
 	
-	public void updateReverb(boolean reverbIsOn){
-		if (plateReverb!=null) plateReverb.setEnabled(reverbIsOn);
+	public void updateReverb(boolean reverbOn){
+		if (plateReverb!=null) plateReverb.setEnabled(reverbOn);
 	}
 	
 	/*==========================================================================
@@ -205,7 +222,7 @@ public class AudioThru extends HandlerThread {
 			float[] outputBuffer = calcOutput(inputBuffer,processBuffer);
 			byte[] outputByteArray = Write(outputBuffer);
 			onNewSamplesReceived(inputBuffer);
-			record(ByteBuffer.wrap(outputByteArray));
+			record(outputByteArray);
 			//outputByteBuffer = ByteBuffer;
 			//OnBufferListener.this.OnBufferReady(ByteBuffer.wrap(outputByteArray));
 		}
@@ -224,6 +241,7 @@ public class AudioThru extends HandlerThread {
 	}
 	
 	public static final int newSampleWhat = 24;
+	private static final int Audio_Capture_Handler_What = 21;
 	
 	protected Message procHandlerMsg;
 	
@@ -307,12 +325,30 @@ public class AudioThru extends HandlerThread {
 		processBuffer = new_proc_buff;
 	}
 	
-	private void record(final ByteBuffer newBuff) {
+	private void record(final byte[] outputByteArray) {
+		// break statement if not recording
 		if (observer==null||audioCaptureHandler==null){return;}
-		Message msg = audioCaptureHandler.obtainMessage();
-		msg.obj = newBuff;
-		msg.what = 1;
-		audioCaptureHandler.sendMessage(msg);
+		
+		// put new byte array on audio capture buffer
+		try {
+			audioCapturePacket[captureBuffIdx].pcmBuff.put(outputByteArray);
+		// check if audioCapture Buffer is ready to send to encoder
+		} catch (BufferOverflowException e) {
+			// fill will remaining samples and send to encoder		
+			int remaining = audioCapturePacket[captureBuffIdx]
+					.finishPack(captureFrameIdx++,outputByteArray);
+
+			Message msg = audioCaptureHandler.obtainMessage();
+			msg.obj = audioCapturePacket[captureBuffIdx];
+			msg.what = Audio_Capture_Handler_What;
+			audioCaptureHandler.sendMessage(msg);
+			
+			//iterate packet fill with remaining samples 
+			captureBuffIdx = ++captureBuffIdx%4;
+			audioCapturePacket[captureBuffIdx]
+					.startPack(remaining, outputByteArray);
+
+		}
 	}
 	
 	
@@ -387,5 +423,30 @@ public class AudioThru extends HandlerThread {
 		return out_byte_buff;
 	}
 
+	public class AudioPacket {
+		public int frameIdx;
+		public ByteBuffer pcmBuff;
+		public AudioPacket(int i, ByteBuffer b){
+			frameIdx = i;
+			pcmBuff = b;
+		}
+		
+		public void startPack(int r, byte[] inPCM){
+			pcmBuff.reset();
+			pcmBuff.put(inPCM, r, inPCM.length-r);
+		}
+		
+		public int finishPack(int i, byte[] inPCM){
+			frameIdx = i;
+			
+			int remaining = pcmBuff.limit()-pcmBuff.position();
+			pcmBuff.put(inPCM, 0, remaining);
+			pcmBuff.reset();
+			
+			return remaining;
+		}
+	}
 
 }
+
+

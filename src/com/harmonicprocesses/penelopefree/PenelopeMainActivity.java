@@ -733,6 +733,7 @@ public class PenelopeMainActivity extends Activity implements TextureView.Surfac
 			RECORD_MODE = !RECORD_MODE;
 			if (RECORD_MODE) {
 				//mPcamera.start(mOpenGLViewGroup);
+				item.setChecked(true);
 				if (!mPcamera.start()){
 					RECORD_MODE = !RECORD_MODE;
 					return true;
@@ -742,6 +743,7 @@ public class PenelopeMainActivity extends Activity implements TextureView.Surfac
 						R.string.dialog_penelope_full_messsage_record)
 						.show(getFragmentManager(),"PaidForVersionDialog");
 			} else {
+				item.setChecked(false);
 				mPcamera.stop(mOpenGLViewGroup);
 				findViewById(R.id.record_button).setVisibility(View.GONE);
 				

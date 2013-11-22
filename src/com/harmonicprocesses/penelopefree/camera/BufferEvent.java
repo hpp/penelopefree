@@ -4,6 +4,8 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.harmonicprocesses.penelopefree.audio.AudioThru.AudioPacket;
+
 import android.media.MediaCodec.BufferInfo;
 import android.media.MediaFormat;
 
@@ -13,11 +15,11 @@ public class BufferEvent {
 	public interface CodecBufferReadyListener{
 		public boolean OnCodecBufferReady(ByteBuffer inBuff,boolean isAudio,BufferInfo buffInfo);
 
-		public boolean OnCodecBufferFormatChange(MediaFormat videoFormat);
+		public boolean OnCodecBufferFormatChange(MediaFormat videoFormat, boolean isAudio);
 	}
 	
 	public interface AudioBufferListener {
-		public boolean OnAudioBufferReady(ByteBuffer newBuff);
+		public boolean OnAudioBufferReady(AudioPacket obj);
 	}
 	
 	public BufferEvent(){
@@ -43,15 +45,15 @@ public class BufferEvent {
 			  }
 		  }
 		  
-		  public void fireCodecBufferFormatChange(MediaFormat format){
+		  public void fireCodecBufferFormatChange(MediaFormat format, boolean isAudio){
 			  for (CodecBufferReadyListener listener:codecListeners) {
-				  listener.OnCodecBufferFormatChange(format);
+				  listener.OnCodecBufferFormatChange(format, isAudio);
 			  }
 		  }
 		  
-		  public void fireAudioBufferReady(ByteBuffer newBuff){
+		  public void fireAudioBufferReady(AudioPacket obj){
 			  for (AudioBufferListener listener:audioListeners) {
-				  listener.OnAudioBufferReady(newBuff);
+				  listener.OnAudioBufferReady(obj);
 			  }
 		  }
 		  

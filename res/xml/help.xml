@@ -5,18 +5,18 @@
         android:title="@string/tutorial"
         android:key="tutorial_key">
     	<intent android:action="android.intent.action.VIEW"
-    	    android:data="http://mypromotank.com/hp/penelope/?page_id=16" />
+    	    android:data="http://penny.hpp.io/?page_id=19" />
     </Preference>
     <Preference 
         android:title="@string/about"
         android:key="about_key">
         <intent android:action="android.intent.action.VIEW"
-        	android:data="http://mypromotank.com/hp/penelope" />
+        	android:data="http://penny.hpp.io/" />
     </Preference>
 	<Preference
         android:title="@string/report_problem"
         android:key="report_problem_key">
     	<intent android:action="android.intent.action.VIEW"
-        	android:data="http://mypromotank.com/hp/penelope/?page_id=10" />
+        	android:data="http://penny.hpp.io/?page_id=12" />
     </Preference>    
 </PreferenceScreen>

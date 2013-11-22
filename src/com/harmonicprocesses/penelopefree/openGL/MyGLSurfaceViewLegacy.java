@@ -161,7 +161,7 @@ public class MyGLSurfaceViewLegacy extends MyGLSurfaceView {
     }
 
 	private void sendRequestRender() {
-		if (mSharedPrefs.getBoolean("turn_on_visualization_key",true) && super.capturingVideo){
+		if (mSharedPrefs.getBoolean("turn_on_visualization_key",true) && !capturingVideo){
 			requestRender();
 		}
 	}
@@ -201,7 +201,7 @@ public class MyGLSurfaceViewLegacy extends MyGLSurfaceView {
     	
     	
     	//note_display.bringToFront();
-    	if (!capturingVideo ) sendRequestRender();
+    	sendRequestRender();
     	
     	float xAccel = mRenderer.mAccelmeter.linear_acceleration[0];
 		if (xAccel>1.0){

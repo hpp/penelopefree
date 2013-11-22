@@ -2,6 +2,8 @@ package com.harmonicprocesses.penelopefree.camera;
 
 import java.nio.ByteBuffer;
 
+import com.harmonicprocesses.penelopefree.audio.AudioConstants;
+import com.harmonicprocesses.penelopefree.audio.AudioThru.AudioPacket;
 import com.harmonicprocesses.penelopefree.camera.BufferEvent.AudioBufferListener;
 import android.annotation.TargetApi;
 import android.graphics.Bitmap;
@@ -30,7 +32,12 @@ public class MyMediaCodec{
     private static final String AUDIO_MIME_TYPE = "audio/mp4a-latm";
     public Surface videoCodecInputSurface;
 	public Surface videoInputSurface;
-	static final String TAG = "com.hpp.penny.cam.MyMediaCodec"; 
+	static final String TAG = "com.hpp.penny.cam.MyMediaCodec";
+	static final float byte_per_pcm_frame = 2.0f, 
+			pcm_sample_freq = (float) AudioConstants.sampleRate;
+	public static final float pcm_bytes_per_mp4_frame = (byte_per_pcm_frame * pcm_sample_freq)
+			/ CaptureManager.frame_rate;
+	//ByteBuffer pcmFillBuff;
 	CaptureManager codecManager;
 	int frameIdx = 0;
 	// size of a frame, in pixels
@@ -70,6 +77,7 @@ public class MyMediaCodec{
 			//		AudioConstants.numChannels);
 			surface = null;
 			codec.configure(mediaFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
+			observer.add(onBufferListener);
 		} else { //is VideoCodec
 			codec = MediaCodec.createEncoderByType(VIDEO_MIME_TYPE);
 			profile = CamcorderProfile.get(mCamId,CamcorderProfile.QUALITY_HIGH);
@@ -141,32 +149,19 @@ public class MyMediaCodec{
 	AudioBufferListener onBufferListener = new AudioBufferListener() {
 		
 		@Override
-		public boolean OnAudioBufferReady(ByteBuffer newBuff){
+		public boolean OnAudioBufferReady(AudioPacket audioCaptureBuff){
 			if (codec==null){return false;}
-
-			inBuff[0] = newBuff;
-			/*
-			int newLen = newBuff.length;
-			int inLen = inBuff.length;
-			int inBuffIdx = codec.dequeueInputBuffer(-1);
-			if (inBuffIdx >= 0) {
-				// fill inBuff[inBuffIdx] with valid data
-				int n = 0;
-				for (int i=0;i<newLen;i++){
-					if (inBuffIdx+i+n>=inLen){n-=inLen;}
-					inBuff[inBuffIdx+i+n]=newBuff[i];
-				}
-				codec.queueInputBuffer(inBuffIdx, 0, newLen, -1, 0);
-			}
-			*/
-			runQue(false);
 			
+			sendInByteBuffer(audioCaptureBuff, 
+					audioCaptureBuff.pcmBuff.capacity(), !codecManager.recordingStatus());
 			return true;
 		}
 	};
 
 
 	void runQue(boolean EOS) {
+		if (codec == null) return;
+		
 		if (EOS) {
 			if (checkEOS(EOS)) { 
 				return;
@@ -176,7 +171,7 @@ public class MyMediaCodec{
 		int outBuffIdx = codec.dequeueOutputBuffer(buffInfo, 16000);
 		if (outBuffIdx == MediaCodec.INFO_TRY_AGAIN_LATER) {
 			if (!EOS) {
-				Log.d(TAG, "output buffer dequeued with 'try again later'");
+				Log.d(TAG, "output buffer dequeued with 'try again later' isAudio = " + isAudioCodec);
 				return;
 			} else if (isAudioCodec || (!useInputSurface && !codecManager.useStaticBitmap)) {
 				Log.d(TAG, "queueing EOS to inputBuffer");
@@ -193,7 +188,7 @@ public class MyMediaCodec{
 			// Subsequent data will conform to new format.
 			if (!EOS){
 				MediaFormat format = codec.getOutputFormat();
-				observer.fireCodecBufferFormatChange(format);
+				observer.fireCodecBufferFormatChange(format, isAudioCodec);
 			}
 		} else if (outBuffIdx < 0) {
 			Log.d(TAG,
@@ -219,7 +214,7 @@ public class MyMediaCodec{
 	
 	private boolean checkEOS(boolean EOS){
 		if ((buffInfo.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM)!=0) {
-			Log.d(TAG,"EOS reached, EOS = " + EOS);
+			Log.d(TAG,"EOS reached, EOS = " + EOS + ", isAudio = " + isAudioCodec);
 			if(EOS){
 				//it is okay, we are done
 				stop();
@@ -233,7 +228,9 @@ public class MyMediaCodec{
 		if (!isAudioCodec && useInputSurface) {
 			codec.signalEndOfInputStream();
 			runQue(true);
-		} 
+		} else if (isAudioCodec){
+			sendInByteBuffer(null, (int) pcm_bytes_per_mp4_frame, true);
+		}
 	}
 	
 	public void stop(){
@@ -266,8 +263,14 @@ public class MyMediaCodec{
 		runQue(false);
 		return true;
 	}//*/
-
-	public void updateInputSurfaceByteArray(ByteBuffer buff,int size, boolean eos) {
+	
+	public void updateInputSurfaceByteArray(ByteBuffer drawingBuffer, int size,
+			boolean b) {
+		//sendInByteBuffer(drawingBuffer,size,b);
+	}
+	
+	
+	public void sendInByteBuffer(AudioPacket audioPacket,int size, boolean eos) {
 		if (codecPrimed) {
 			int inBuffIdx = codec.dequeueInputBuffer((long) 16.667);
 			if (inBuffIdx < 0) {
@@ -278,11 +281,14 @@ public class MyMediaCodec{
 			ByteBuffer inputByteBuffer = inBuff[inBuffIdx];
 			inputByteBuffer.clear();
 			if (size>inputByteBuffer.capacity()) size = inputByteBuffer.capacity();
-			inputByteBuffer.put(buff);
-			long presentationTimeUs = ((long) 1000000000/(long) mFrameRate);
+			long presentationTimeUs = audioPacket != null ? 
+					codecManager.nextFrame(isAudioCodec, audioPacket.frameIdx): 
+					codecManager.nextFrame(isAudioCodec, codecManager.audioFrameCount+1);
 			if (eos){
 				codec.queueInputBuffer(inBuffIdx,0,size,presentationTimeUs,MediaCodec.BUFFER_FLAG_END_OF_STREAM);
 			} else {
+				
+				inputByteBuffer.put(audioPacket.pcmBuff);
 				codec.queueInputBuffer(inBuffIdx,0,size,presentationTimeUs,0);
 			}
 		}
@@ -407,4 +413,6 @@ public class MyMediaCodec{
 	     }
 	     return -1;
 	 }
+
+
 }

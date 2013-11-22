@@ -18,7 +18,7 @@
 	<string name="options">Settings</string>
 	<string name="tutorial">Tutorial</string>
 	<string name="about">About</string>
-	<string name="option_record">Records</string>
+	<string name="option_record">Record Mode</string>
 	<string name="option_help">Help</string>
 	<string name="blank"></string>
 	<string name="performance_options_category">Performance Options</string>
@@ -54,7 +54,7 @@
 	
 	
 	<string name="dialog_penelope_full_messsage_usb">Our apologies, USB Audio IO is only supported in the full version at this time.</string>
-	<string name="dialog_penelope_full_messsage_record">Our apologies, Recording is only supported in the full version at this time.</string>
+	<string name="dialog_penelope_full_messsage_record">Our apologies, Recording is supported for Android v4.3+ devices, but it is still in Beta.</string>
 	
 	<string name="dialog_button_next_time">Next Time</string>
 	<string name="dialog_button_more_info">More Info</string>
@@ -65,7 +65,7 @@
 	
 	<string name="dialog_welcome_to_penelope">Welcome to Penelope. \n\nEnjoy!</string>
 	<string name="dialog_button_enjoy">Enjoy!</string>
-	<string name="enable_reverb">Enable Reverb</string>
+	<string name="enable_reverb">Plate Reverb</string>
 	<string name="inver_audio_summary">Reverse phase of output audio. May help reduce feedback.</string> 
 	
 	<string name="number_of_particles">Number of Particles</string>
@@ -83,7 +83,7 @@
 	<string name="buff_size_int_dialog">Size of audio buffer, increase to clean up audio, decrease to reduce delay. Target for Samsung S3 is 2.</string>
 	<string name="buff_size_int_text">Audio Buffer Size</string>
 	
-	<!--  From Here on out translations need to be updated -->
+	<!--  From Here on out translations need to be added -->
 	<string name="dialog_rate_penelope">Enjoying Penelope? \n\nPlease take the time to give Penelope a FIVE Star Rating. It is Very important to us. \n\nThank You!</string>
 	<string name="dialog_purchase1">Thank You kindly for your puchase of </string>
 	<string name="dialog_purchase2">\n\nRest Assured Google Play will remmeber this purchase, should you get a new phone.\n\nEnjoy!</string>
@@ -96,7 +96,7 @@
 	<string name="SEFX_pitch_corrects_summary">Change Wet/Dry Ratio for overall effect</string>
 	<string name="SEFX_pitch_correct_dialog">Sing on note.</string>
 	<string name="SEFX_pitch_correct_text">Level</string>
-	<string name="dialog_purchase_pitch_correct">Buy Pitch Correct?\n\n</string>
+	<string name="dialog_purchase_pitch_correct">Buy </string>
 	<string name="dialog_purchase_please_try">\n\nPlease try for free first to see how well it works for you.</string>
 	<string name="dialog_button_try">Try For Free</string>
 	<string name="dialog_button_buy">Buy Now</string>
@@ -105,7 +105,12 @@
 	<string name="dialog_purchase_tries_exhausted1">Sorry you have no more tries.\n\nPlease purchase </string>
 	<string name="dialog_purchase_tries_exhausted2"> to continue.</string>
 	<string name="dialog_purchase_error">ERROR trying </string>
+	<string name="standard_effects">Standard Effects</string>
+	<string name="premium_effects">Premium Effects</string>
+	<string name="full_version_presale">Full Version Pre-Sale</string>
+	<string name="dialog_purchase_adInfinitum">\n\nFull Version Pre-Sale. Purchasing this now locks you in for all future premium effects</string>
 	
-	<!--  From Here on out translations need to be changed -->
+	<!--  From Here on out translations need to be updated -->
 	<string name="dialog_penelope_full_messsage_capture">Our apologies, Recording is only supported in Android 4.3 (API_18). A work around may be to use a third party screen capture app.</string>
+
 </resources>

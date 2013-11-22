@@ -23,13 +23,13 @@ public class STextureRender {
     private static final int TRIANGLE_VERTICES_DATA_STRIDE_BYTES = 5 * FLOAT_SIZE_BYTES;
     private static final int TRIANGLE_VERTICES_DATA_POS_OFFSET = 0;
     private static final int TRIANGLE_VERTICES_DATA_UV_OFFSET = 3;
-    private static final float z_0 = -0.001f;
+    private static final float z_0 = 0.0f;
     private final float[] mTriangleVerticesData = {
             // X, Y, Z, U, V
-            -1.5f, -1.0f, z_0, 0.f, 0.f,
-             1.0f, -1.0f, z_0, 1.f, 0.f,
-            -1.5f,  1.0f, z_0, 0.f, 1.f,
-             1.0f,  1.0f, z_0, 1.f, 1.f,
+            -1.0f, -1.0f, z_0, 0.0f, 0.0f,
+             1.0f, -1.0f, z_0, 1.0f, 0.0f,
+            -1.0f,  1.0f, z_0, 0.0f, 1.0f,
+             1.0f,  1.0f, z_0, 1.0f, 1.0f,
     };
 
     private FloatBuffer mTriangleVertices;
@@ -54,7 +54,7 @@ public class STextureRender {
             "  gl_FragColor = texture2D(sTexture, vTextureCoord);\n" +
             "}\n";
 
-    private float[] mMVPMatrix = new float[16];
+    //private float[] mMVPMatrix = new float[16];
     private float[] mSTMatrix = new float[16];
 
     private int mProgram;
@@ -82,7 +82,7 @@ public class STextureRender {
         return mTextureID;
     }
 
-    public ByteBuffer drawFrame(SurfaceTexture st) {
+    public void drawFrame(SurfaceTexture st, float[] mMVPMatrix) {
         checkGlError("onDrawFrame start");
         st.getTransformMatrix(mSTMatrix);
 
@@ -117,7 +117,7 @@ public class STextureRender {
         GLES20.glEnableVertexAttribArray(maTextureHandle);
         checkGlError("glEnableVertexAttribArray maTextureHandle");
 
-        Matrix.setIdentityM(mMVPMatrix, 0);
+        //Matrix.setIdentityM(mMVPMatrix, 0);
         GLES20.glUniformMatrix4fv(muMVPMatrixHandle, 1, false, mMVPMatrix, 0);
         GLES20.glUniformMatrix4fv(muSTMatrixHandle, 1, false, mSTMatrix, 0);
 
@@ -128,14 +128,10 @@ public class STextureRender {
         //draw frame ontop of camera
         //mGLView.requestRender();
         
-        ByteBuffer pixelBuffer = null;
-        if (CaptureManager.useFrameBuffer){
-        	pixelBuffer = getPixelBuffer();
-        }
         
         //GLES20.glFinish();
-        GLES20.glFlush();
-        return pixelBuffer;
+        //GLES20.glFlush();
+        return;
     }
 
     private ByteBuffer getPixelBuffer() {

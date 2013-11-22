@@ -154,7 +154,7 @@ public class MyEGLWrapper {
     
     @TargetApi(17)
     private void eglSetup() {
-    	mView.beginCapture();
+    	//mView.beginCapture();
         mEGLDisplay = EGL14.eglGetDisplay(EGL14.EGL_DEFAULT_DISPLAY);
         if (mEGLDisplay == EGL14.EGL_NO_DISPLAY) {
             throw new RuntimeException("unable to get EGL14 display");
@@ -295,11 +295,11 @@ public class MyEGLWrapper {
      */
     public boolean swapBuffers(boolean isRecording) {
     	boolean result;
-        /* if (isRecording) {
-        	result = EGL14.eglSwapBuffers(mEGLDisplay, mEGLRecordSurface);
+        if (isRecording) {
+        	result = EGL14.eglSwapBuffers(mScreenEglDisplay, mScreenEglDrawSurface);
         	checkEglError("eglSwapBuffers");
         	return result;
-        } */
+        }
         	
     	result = EGL14.eglSwapBuffers(mEGLDisplay, mEGLSurface);
         checkEglError("eglSwapBuffers");

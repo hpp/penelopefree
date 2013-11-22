@@ -63,7 +63,7 @@ public class UpSaleDialog extends DialogFragment {
 	
 	DialogInterface.OnClickListener MoreInfoListener = new DialogInterface.OnClickListener() {
 		
-		private String url = "http://mypromotank.com/hp/penelope/?p=59";
+		private String url = " http://penny.hpp.io/?p=63";
 
 		public void onClick(DialogInterface dialog, int id) {
 			final Intent intent = new Intent(Intent.ACTION_VIEW).setData(Uri.parse(url ));

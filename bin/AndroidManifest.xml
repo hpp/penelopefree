@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.harmonicprocesses.penelopefree"
-    android:versionCode="9"
-    android:versionName="1.0.8" >
+    android:versionCode="10"
+    android:versionName="1.1.0" >
 	<uses-feature android:name="android.hardware.usb.host" />
 	<uses-feature android:glEsVersion="0x00020000" />
     <uses-sdk

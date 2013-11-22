@@ -12,10 +12,12 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
@@ -103,7 +105,36 @@ public class SettingsFragment extends PreferenceFragment {
         	
         	
         	
-        }
+        } else if (mKey.contains("ad_infinitum_key")){
+        	
+        	checkPref = ((CheckBoxPreference) pref);
+        	if (mPurchaseManager.purchasedList.contains("Ad Infinitum")){
+        		//if owned make sure the box is checked
+        		checkPref.setChecked(true);
+        		return true;
+        	} else {
+        		checkPref.setChecked(false);
+        		
+        		//if not launch buy/try dialog
+        		PurchaseDialog dialog = new PurchaseDialog()
+        				.setPurchaseManager(mPurchaseManager)
+        				.setAudioProcessor(mAudioProc)
+        				.setSettingsFragment(this)
+        				.setSku(mPurchaseManager.adInfinitum)
+        				.setMId2(R.string.dialog_purchase_adInfinitum)
+        				.setButton1(R.string.dialog_button_more_info, 
+        					new DialogInterface.OnClickListener() {
+								@Override
+								public void onClick(DialogInterface dialog, int which) {
+									final Intent intent = new Intent(Intent.ACTION_VIEW)
+										.setData(Uri.parse("http://penny.hpp.io/?p=1"));
+									getActivity().startActivity(intent);
+								}
+							});
+        		dialog.show(mFrag, "PurchasePitchCorrect");
+        		return true;
+        	}
+        }	
     	return false;
     }
     

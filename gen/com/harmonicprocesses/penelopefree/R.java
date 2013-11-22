@@ -52,7 +52,6 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
     public static final class id {
         public static final int Onair_dummy_button=0x7f0a0008;
         public static final int dummy_button=0x7f0a0003;
-        public static final int enable_pitch_correct=0x7f0a000f;
         public static final int fragment_container=0x7f0a0005;
         public static final int fullscreen_content=0x7f0a0001;
         public static final int fullscreen_content_controls=0x7f0a0002;
@@ -108,20 +107,21 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int dialog_button_ok=0x7f070024;
         public static final int dialog_button_try=0x7f070043;
         public static final int dialog_more_tries=0x7f070046;
-        /**   From Here on out translations need to be changed 
+        /**   From Here on out translations need to be updated 
          */
-        public static final int dialog_penelope_full_messsage_capture=0x7f07004a;
+        public static final int dialog_penelope_full_messsage_capture=0x7f07004e;
         public static final int dialog_penelope_full_messsage_record=0x7f070020;
         public static final int dialog_penelope_full_messsage_usb=0x7f07001f;
         public static final int dialog_purchase1=0x7f070036;
         public static final int dialog_purchase2=0x7f070037;
+        public static final int dialog_purchase_adInfinitum=0x7f07004d;
         public static final int dialog_purchase_error=0x7f070049;
         public static final int dialog_purchase_fail=0x7f070038;
         public static final int dialog_purchase_pitch_correct=0x7f070041;
         public static final int dialog_purchase_please_try=0x7f070042;
         public static final int dialog_purchase_tries_exhausted1=0x7f070047;
         public static final int dialog_purchase_tries_exhausted2=0x7f070048;
-        /**   From Here on out translations need to be updated 
+        /**   From Here on out translations need to be added 
          */
         public static final int dialog_rate_penelope=0x7f070035;
         public static final int dialog_restart_simulation=0x7f070023;
@@ -129,6 +129,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int dialog_you_have=0x7f070045;
         public static final int enable_pitch_correct=0x7f07003c;
         public static final int enable_reverb=0x7f070027;
+        public static final int full_version_presale=0x7f07004c;
         public static final int go_onair=0x7f07001a;
         public static final int inUSB_default=0x7f07001c;
         public static final int input_default=0x7f07001b;
@@ -150,11 +151,13 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int output_device=0x7f070006;
         public static final int particle_diffusion=0x7f070008;
         public static final int performance_options_category=0x7f070013;
+        public static final int premium_effects=0x7f07004b;
         public static final int record_button=0x7f070003;
         public static final int report_problem=0x7f07000a;
         public static final int shapes=0x7f07000b;
         public static final int sound_category=0x7f070014;
         public static final int special_effects=0x7f07003a;
+        public static final int standard_effects=0x7f07004a;
         public static final int touch_screen=0x7f070019;
         public static final int tutorial=0x7f07000e;
         public static final int visualization=0x7f070016;

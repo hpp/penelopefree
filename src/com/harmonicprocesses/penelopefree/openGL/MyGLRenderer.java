@@ -32,6 +32,7 @@ import com.harmonicprocesses.penelopefree.settings.SettingsActivity;
 import com.harmonicprocesses.penelopefree.renderscript.ScriptC_particleFilter;
 import com.harmonicprocesses.penelopefree.renderscript.ScriptField_particle;
 import com.hpp.openGL.MyEGLWrapper;
+import com.hpp.openGL.STextureRender;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -53,6 +54,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Paint;
+import android.graphics.SurfaceTexture;
 import android.graphics.drawable.LevelListDrawable;
 import android.opengl.EGLContext;
 import android.opengl.GLES20;
@@ -265,11 +267,11 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
 	@Override
     public void onDrawFrame(GL10 gl) {
-		drawFrame();
+		drawFrame(null, null);
 		
     }
 
-	public void drawFrame() {
+	public void drawFrame(STextureRender textureRender, SurfaceTexture texture) {
 		// Draw background color
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
 
@@ -279,6 +281,9 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         // Calculate the projection and view transformation
         Matrix.multiplyMM(mMVPMatrix, 0, mProjMatrix, 0, mVMatrix, 0);
 
+        if (textureRender!=null){
+        	textureRender.drawFrame(texture,mMVPMatrix);
+        }
         // move particles and calc bins
         //mParticleBins.clear();
         
@@ -336,7 +341,9 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         //nextParticleVBO();
         //mParticles.draw(mMVPMatrix, particleVBO);
         
-		
+        if (textureRender!=null){
+        	GLES20.glFlush();
+        }
 	}
 		
 

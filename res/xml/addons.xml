@@ -4,7 +4,7 @@
     <Preference
         android:title="@string/report_problem">
     	<intent android:action="android.intent.action.VIEW"
-    	    android:data="http://www.mypromotank.com" />
+    	    android:data="http://penny.hpp.io/?page_id=12" />
     </Preference>
     <Preference
         android:key="shapes_key"
@@ -13,6 +13,6 @@
 	<Preference
         android:title="@string/report_problem">
     	<intent android:action="android.intent.action.VIEW"
-        	android:data="http://www.mypromotank.com" />
+        	android:data="http://penny.hpp.io/" />
     </Preference>    
 </PreferenceScreen>

@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/options_menu_item_record"
+	<item android:id="@+id/options_menu_item_record"
           android:title="@string/option_record"
           android:icon="@drawable/ic_action_settings" 
-          android:showAsAction="withText"/>
+          android:showAsAction="withText"
+          android:checkable="true"
+          android:checked="false"/>
     <item android:id="@+id/options_menu_special_efects"
           android:title="@string/option_special_effects"
           android:icon="@drawable/ic_action_settings"

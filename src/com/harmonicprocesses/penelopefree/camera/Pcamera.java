@@ -12,6 +12,7 @@ import com.harmonicprocesses.penelopefree.audio.AudioThru;
 import com.harmonicprocesses.penelopefree.openGL.MyGLSurfaceView;
 import com.harmonicprocesses.penelopefree.settings.UpSaleDialog;
 import com.hpp.openGL.MyEGLWrapper;
+import com.hpp.openGL.STextureRender;
 import com.hpp.openGL.SurfaceTextureManager;
 
 import android.annotation.TargetApi;
@@ -68,10 +69,12 @@ public class Pcamera {
 			AudioThru audioThru, SurfaceView cameraSV) {
 		mContext = context;
 		mFrag = context.getFragmentManager();
-		captureManager = new CaptureManager(mContext,this,mGLView,audioThru,cameraSV);
-		captureButton = recordButton;
-		captureButton.setOnClickListener(CaptureButtonListener);
-		
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2){
+			captureManager = new CaptureManager(mContext,this,mGLView,audioThru,cameraSV);
+			captureButton = recordButton;
+			captureButton.setOnClickListener(CaptureButtonListener);
+		}
+
 				
 		if (!checkCameraHardware()) {
 			//TODO what if no camera
@@ -122,7 +125,7 @@ public class Pcamera {
 	
 	
 	public boolean start(){
-		if (!prepCam()) {
+		if (!prepCam()||(Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2)) {
 			Log.e(TAG,"failed to start camera");
 			return false;
 		}
@@ -132,7 +135,7 @@ public class Pcamera {
 	}
 	
 	public void stop(FrameLayout vg) {
-		captureManager.releaseSurfaceTexture();
+		if (captureManager!=null) captureManager.releaseSurfaceTexture();
 		vg.removeView(mCameraPreview);
 		releaseMediaRecorder();
 		releaseCamera();
@@ -398,6 +401,11 @@ public class Pcamera {
 
 	public MyEGLWrapper getEGLWrapper() {
 		return captureManager.getMyEGLWrapper();
+	}
+	
+	public void ChangeVideoEffect(String videoEffect){
+		if (captureManager == null) return;
+		captureManager.changeFragmentShader(videoEffect);
 	}
 }
 

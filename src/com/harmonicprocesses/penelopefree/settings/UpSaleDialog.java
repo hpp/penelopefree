@@ -1,5 +1,6 @@
 package com.harmonicprocesses.penelopefree.settings;
 
+import com.harmonicprocesses.penelopefree.PenelopeMainActivity;
 import com.harmonicprocesses.penelopefree.R;
 
 import android.annotation.SuppressLint;
@@ -8,11 +9,15 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.widget.Toast;
 
 @SuppressLint("ValidFragment")
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
@@ -22,11 +27,14 @@ public class UpSaleDialog extends DialogFragment {
     int button1id = R.string.dialog_button_more_info,
     button2id = R.string.dialog_button_next_time;
     DialogInterface.OnClickListener listener1, listener2;
+	private Context mContext;
 	   
     public UpSaleDialog(){
+    	mContext = getActivity();
 		listener1 = MoreInfoListener;
 		listener2 = DefaultListener;
     }
+    
     
 	@Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -48,6 +56,14 @@ public class UpSaleDialog extends DialogFragment {
 			button1id = bundle.getInt("button1");
 			button2id = bundle.getInt("button2");
 			listener1 = RatePennyListener;
+		} else if (bundle.size()==4){
+			mId = bundle.getInt("messageId");
+			numButtons = 2;
+			button1id = bundle.getInt("button1");
+			button2id = bundle.getInt("button2");
+			if (bundle.getInt("listenerInt1")==3){
+				listener1 = BuyMugListener;
+			}
 		}
 		
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -63,12 +79,25 @@ public class UpSaleDialog extends DialogFragment {
 	
 	DialogInterface.OnClickListener MoreInfoListener = new DialogInterface.OnClickListener() {
 		
-		private String url = " http://penny.hpp.io/?p=63";
+		private String url = "http://penny.hpp.io/?p=63";
 
 		public void onClick(DialogInterface dialog, int id) {
-			final Intent intent = new Intent(Intent.ACTION_VIEW).setData(Uri.parse(url ));
-			getActivity().startActivity(intent);
-        	   
+			if (checkConnectivity()){
+				final Intent intent = new Intent(Intent.ACTION_VIEW).setData(Uri.parse(url));
+				getActivity().startActivity(intent);
+			} 
+       	}
+   	};
+   	
+	DialogInterface.OnClickListener BuyMugListener = new DialogInterface.OnClickListener() {
+		
+		private String url = "market://details?id=com.harmonicprocesses.penelopefree";
+
+		public void onClick(DialogInterface dialog, int id) {
+			if (checkConnectivity()){
+				final Intent intent = new Intent(Intent.ACTION_VIEW).setData(Uri.parse(url));
+				getActivity().startActivity(intent);
+			} 
        	}
    	};
    	
@@ -78,8 +107,10 @@ public class UpSaleDialog extends DialogFragment {
    		
 		@Override
 		public void onClick(DialogInterface dialog, int which) {
-			final Intent intent = new Intent(Intent.ACTION_VIEW).setData(Uri.parse(url ));
-			getActivity().startActivity(intent);
+			if (checkConnectivity()){
+				final Intent intent = new Intent(Intent.ACTION_VIEW).setData(Uri.parse(url));
+				getActivity().startActivity(intent);
+			}
 		}
 	};
    	
@@ -90,7 +121,7 @@ public class UpSaleDialog extends DialogFragment {
     	}
     };
 
-	public static UpSaleDialog BuildUpSaleDialog(int messageId, 
+	public static UpSaleDialog BuildUpSaleDialog(Context context, int messageId, 
 			Integer... buttons) {
 	    
 		assert buttons.length <= 1;
@@ -103,6 +134,9 @@ public class UpSaleDialog extends DialogFragment {
 	    } if (buttons.length >= 2){
 	    	int button2 = buttons[1].intValue();
 	    	bundle.putInt("button2", button2);
+	    } if (buttons.length >= 3){
+	    	int listenerInt1 = buttons[2].intValue();
+	    	bundle.putInt("listenerInt1", listenerInt1);
 	    }
 		
 	    UpSaleDialog dialog = new UpSaleDialog();
@@ -110,5 +144,15 @@ public class UpSaleDialog extends DialogFragment {
 		return dialog;
 	}
 	
+	public boolean checkConnectivity(){
+		ConnectivityManager cm = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo ni = cm.getActiveNetworkInfo();
+		if (ni != null && ni.isAvailable() && ni.isConnected()){
+			return true;
+		} else {
+			Toast.makeText(mContext, R.string.unable_to_connect, Toast.LENGTH_LONG).show();
+			return false;
+		}
+	}
 
 }

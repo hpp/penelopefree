@@ -109,6 +109,25 @@
 	<string name="premium_effects">Premium Effects</string>
 	<string name="full_version_presale">Full Version Pre-Sale</string>
 	<string name="dialog_purchase_adInfinitum">\n\nFull Version Pre-Sale. Purchasing this now locks you in for all future premium effects</string>
+	<string name="dialog_purchase_buy_ad_infinitum">Buy Ad Infinitum?\n\n</string>
+	<string name="unable_to_connect">Unable to connect to internet.</string>
+	<string name="record_effect">Video Effect</string>
+	<string name="enable_tone_generator">Tone Generator</string>
+	<string name="enable_tone_generator_description">Follows pitch</string>
+	<string-array name="record_effect_entries">
+	    <item name="video_effect_none">None</item>
+	    <item name="video_effect_sorbel">Edge Highlight</item>
+	    <!-- <item name="video_effect_julia">Julia Dream</item> --> 
+	</string-array>
+	<string-array name="record_effect_values">
+	    <item name="video_effect_none">none</item>
+	    <item name="video_effect_sorbel">sorbel</item>
+	    <!-- <item name="video_effect_julia">julia</item> --> 
+	</string-array>
+	<string name="record_effect_value_default">sorbel</string>
+	
+	<string name="dialog_welcome_to_new_features">\nWelcome to Penelope v1.1.7\n\nNew Features\n *Special Effect:Tone Generator \n *Some bug fixes, Record still in Beta"\n\n</string>
+	<string name="dialog_button_buy_mug">Rate 5 STARS!</string>
 	
 	<!--  From Here on out translations need to be updated -->
 	<string name="dialog_penelope_full_messsage_capture">Our apologies, Recording is only supported in Android 4.3 (API_18). A work around may be to use a third party screen capture app.</string>

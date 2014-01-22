@@ -19,6 +19,11 @@
 			android:defaultValue="92"
 			android:text="@string/wet_dry_ratio_text"
 			android:max="100"/>
+		<CheckBoxPreference 
+		    android:key="enable_tone_generator_key"
+		    android:title="@string/enable_tone_generator"
+		    android:summary="@string/enable_tone_generator_description"
+			android:defaultValue="false"/>
 		<CheckBoxPreference
 			android:key="enable_reverb_key"
 			android:title="@string/enable_reverb"
@@ -47,5 +52,15 @@
 			android:text="@string/SEFX_pitch_correct_text"
 			android:max="100"/>
 		-->
+	</PreferenceCategory>
+	<PreferenceCategory 
+	    android:title="@string/record_effect">
+	<ListPreference
+        android:key="video_effect_key"
+        android:title="@string/record_effect"
+        android:dialogTitle="@string/record_effect"
+        android:entries="@array/record_effect_entries"
+        android:entryValues="@array/record_effect_values"
+        android:defaultValue="@string/record_effect_value_default" />
 	</PreferenceCategory>
 </PreferenceScreen> 

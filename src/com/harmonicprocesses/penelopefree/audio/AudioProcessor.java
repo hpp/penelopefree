@@ -32,7 +32,7 @@ public class AudioProcessor extends HandlerThread{
 	
 	private AudioThru mAudioThru;
 	public DSPEngine dsp;
-	public volatile boolean boolPitchCorrectEnabled, boolToneGenerateEnable = false;
+	public volatile boolean boolPitchCorrectEnabled = false, boolToneGenerateEnable;
 	public volatile float pitchCorrectLevel;
 	private Handler spectrumUpdateHandler = null, noteUpdateHandler = null,
 			processBufferUpdateHandler = null;
@@ -47,6 +47,7 @@ public class AudioProcessor extends HandlerThread{
 		bufferSize = AudioConstants.getBufferSize(buffSize);
 		floatBufferSize = AudioConstants.getFloatBufferSize(buffSize);
 		dsp = new DSPEngine(floatBufferSize/2, AudioConstants.sampleRate, context);
+		
 	}
 	
 	public AudioProcessor getProcessor(){
@@ -144,6 +145,10 @@ public class AudioProcessor extends HandlerThread{
 				.edit().putBoolean(PurchaseManager.pitchCorrect,on).commit();
 	}
 	
+	public void updateToneGenerator(boolean on){
+		boolToneGenerateEnable = on;
+	}
+	
 	public void updatePitchCorrect(int level){
 		pitchCorrectLevel = level/100.0f;
 	}
@@ -171,6 +176,7 @@ public class AudioProcessor extends HandlerThread{
 		
 		if (!useWavelet){
 			proc_buff = downSample(in_buff);
+			//proc_buff = in_buff;
 			if (doubleDown){
 				proc_buff = doubleDownSample(proc_buff);
 			}
@@ -192,7 +198,7 @@ public class AudioProcessor extends HandlerThread{
 			onSpectrumReady(wavelet.getSpectrum());
 		}
 		// this is the only time sensitive 
-		//processedBuffer = createProcessBuffer(mNote, spectrum[mNote]);
+		processedBuffer = createProcessBuffer(mNote, spectrum[mNote]);
 		synchronized(processBufferUpdateHandler){
 			Message msg = processBufferUpdateHandler.obtainMessage(); 
 			msg.obj = processedBuffer;

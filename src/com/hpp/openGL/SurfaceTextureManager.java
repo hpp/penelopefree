@@ -28,10 +28,11 @@ public class SurfaceTextureManager
      * Creates instances of TextureRender and SurfaceTexture.
      * @param size 
      */
-    public SurfaceTextureManager(Size size) {
-        mTextureRender = new STextureRender();
-        mTextureRender.surfaceCreated();
+    public SurfaceTextureManager(Size size, String fragShader) {
+        mTextureRender = new STextureRender(fragShader);
         mTextureRender.surafaceChanged(size.width, size.height);
+        mTextureRender.surfaceCreated();
+        
 
         Log.d(TAG, "textureID=" + mTextureRender.getTextureId());
         mSurfaceTexture = new SurfaceTexture(mTextureRender.getTextureId());

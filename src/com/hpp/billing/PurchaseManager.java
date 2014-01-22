@@ -27,7 +27,7 @@ public class PurchaseManager {
 	IInAppBillingService mService;
 	public ArrayList<String> skuList, priceList, purchasedList;
 	public final static String pitchCorrect = "Pitch Correction",
-			adInfinitum = "Ad Infinitum";
+			adInfinitum = "ad_infinitum";
 	public final int pitchCorrect_RequestCode = 102, adInfinitum_RequestCode = 101; 	
 	
 	
@@ -148,6 +148,8 @@ public class PurchaseManager {
 		
 		if (ownedItems == null) return null;
 		ArrayList<String> ownedList = ownedItems.getStringArrayList("INAPP_PURCHASE_ITEM_LIST");
+		
+		if (ownedList == null) return null;
 		if (ownedList.contains(adInfinitum)){
 			ownedList = skuList;
 		}

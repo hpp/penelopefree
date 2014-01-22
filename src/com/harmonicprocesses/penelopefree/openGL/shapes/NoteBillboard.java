@@ -36,6 +36,7 @@ public class NoteBillboard {
         "varying vec2 v_TexCoordinate;\n" +
         "uniform sampler2D u_Texture;\n" +
         "void main() {\n" +
+        //"  gl_FragColor = vec4(1.0,1.0,1.0,1.0);\n" +
         "  gl_FragColor = texture2D(u_Texture, v_TexCoordinate);\n" +
         "}\n";
 
@@ -197,7 +198,7 @@ public class NoteBillboard {
         mTextureUniformHandle = GLES20.glGetUniformLocation(mProgram, "u_Texture");
         mTextureCoordinateHandle = GLES20.glGetAttribLocation(mProgram, "a_TexCoordinate");
      
-        // Set the active texture unit to texture unit 0.
+        // Set the active texture unit to texture unit 1. (0 reserved for FBO?)
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
      
         // Bind the texture to this unit.

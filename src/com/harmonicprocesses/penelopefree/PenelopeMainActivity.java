@@ -61,6 +61,8 @@ import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbEndpoint;
 import android.hardware.usb.UsbInterface;
 import android.hardware.usb.UsbManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.opengl.EGLContext;
 import android.opengl.GLSurfaceView;
 import android.os.Build;
@@ -227,6 +229,7 @@ public class PenelopeMainActivity extends Activity implements TextureView.Surfac
 	TextView backgroundText;
 	Button onAirButton;
 	public PurchaseManager purchaseManager;
+	final static public boolean netConnection = true;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -240,6 +243,10 @@ public class PenelopeMainActivity extends Activity implements TextureView.Surfac
 	            onDestroy();
 	        }
 	    }//*/
+		
+		//ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		//NetworkInfo ni = cm.getActiveNetworkInfo();
+		//netConnection = (ni != null && ni.isAvailable() && ni.isConnected());
 		
 		// connect to Google Play Billing service
 		purchaseManager = new PurchaseManager(this);
@@ -269,7 +276,7 @@ public class PenelopeMainActivity extends Activity implements TextureView.Surfac
 		}
 		mSharedPrefs.edit().putInt("number_of_runs", ++number_of_runs).apply();
 		
-		int version_code=9;
+		int version_code=13;
 		try {
 			version_code = this.getPackageManager()
 				    .getPackageInfo(this.getPackageName(), 0).versionCode;
@@ -277,9 +284,12 @@ public class PenelopeMainActivity extends Activity implements TextureView.Surfac
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		int new_features_level = mSharedPrefs.getInt("new_features_level", 9);
+		int new_features_level = mSharedPrefs.getInt("new_features_level", version_code);
 		if (new_features_level<version_code) {
-			//TODO add New Features Dialog Covering Special Effects Products
+			//New Features Dialog Covering Special Effects Products
+			UpSaleDialog.BuildUpSaleDialog(this, R.string.dialog_welcome_to_new_features,
+					R.string.dialog_button_buy_mug, R.string.dialog_button_ok, 3)
+					.show(getFragmentManager(),"PaidForVersionDialog");
 			mSharedPrefs.edit().putInt("new_features_level", version_code).apply();
 		}
 		
@@ -330,6 +340,8 @@ public class PenelopeMainActivity extends Activity implements TextureView.Surfac
 				dialog.show(getFragmentManager(), "Purchase " + sku);
 			}
 		}
+		mAudioProcessor.updateToneGenerator(mSharedPrefs.getBoolean("enable_tone_generator_key", false));
+		mAudioProcessor.updateReverb(mSharedPrefs.getBoolean("enable_reverb_key", false));
 		mAudioProcessor.start();
 		procNoteHandler = mAudioProcessor.getNoteUpdateHandler();
 
@@ -736,10 +748,12 @@ public class PenelopeMainActivity extends Activity implements TextureView.Surfac
 				item.setChecked(true);
 				if (!mPcamera.start()){
 					RECORD_MODE = !RECORD_MODE;
-					return true;
+					item.setChecked(false);
+					//return true;
+				} else {
+					findViewById(R.id.record_button).setVisibility(View.VISIBLE);
 				}
-				findViewById(R.id.record_button).setVisibility(View.VISIBLE);
-				UpSaleDialog.BuildUpSaleDialog(
+				UpSaleDialog.BuildUpSaleDialog(mContext,
 						R.string.dialog_penelope_full_messsage_record)
 						.show(getFragmentManager(),"PaidForVersionDialog");
 			} else {
@@ -843,7 +857,8 @@ public class PenelopeMainActivity extends Activity implements TextureView.Surfac
 			//Intent intent = new Intent(this, SpecialEffects.class);
 			mSettingsFragment = new SettingsFragment().setXmlId(R.xml.special_effects);
 			mSettingsFragment.setPurchaseManager(purchaseManager)
-					.setAudioProcessor(mAudioProcessor);
+					.setAudioProcessor(mAudioProcessor)
+					.setPcam(mPcamera);
 			getFragmentManager().beginTransaction()
 				.replace(R.id.fragment_container, mSettingsFragment)
 				.commit();
@@ -855,6 +870,11 @@ public class PenelopeMainActivity extends Activity implements TextureView.Surfac
 		return false;
 	}
 	
+	private void setPcam(Pcamera mPcamera2) {
+		// TODO Auto-generated method stub
+		
+	}
+
 	/**
 	 * Remove the UI's hide routine when the options menu is expanded
 	 * and hide UI when options menu is collapsed.

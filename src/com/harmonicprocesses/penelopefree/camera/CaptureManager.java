@@ -29,6 +29,7 @@ import android.os.Looper;
 import android.os.Message;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceView;
@@ -81,7 +82,8 @@ public class CaptureManager {
 		audioThread.start();
 		mAudio = audioThru;
 		initCapture();
-		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2&&videoOn){
+		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2&&videoOn ||
+				videoCodec != null){
 			if (!useInputSurface){ 
 				//videoCodec.videoInputSurface = camSV.getHolder().getSurface();
 				mEGLWrapper = new MyEGLWrapper(mContext, videoCodec.videoCodecInputSurface , glSurfaceView);
@@ -193,7 +195,7 @@ public class CaptureManager {
 		});
 	}
 	
-	public SurfaceTextureManager mStManager;
+	public SurfaceTextureManager mStManager = null;
 	private SurfaceTexture mSt;
 	
 	
@@ -212,16 +214,19 @@ public class CaptureManager {
 				mGLView.beginCapture();
 				mEGLWrapper.init();
 				mEGLWrapper.makeCurrent(true,null);//going to screen not encoder no input surface yet
-				mStManager = new SurfaceTextureManager(cam.getParameters().getPreviewSize());
+				mStManager = new SurfaceTextureManager(cam.getParameters().getPreviewSize(),
+						checkVideoEffect(null));
 		        mSt = mStManager.getSurfaceTexture();
 		        cam.setPreviewTexture(mSt);
 		        cam.startPreview();
 			} catch (Exception e) {
 				Log.e(TAG,"Fatal Exception post Draw = " + e.getMessage());
+				e.printStackTrace();
 			}
 			cameraPreviewLoop();	// TODO Auto-generated method stub
 			
 			}
+
 		});
     }
 	
@@ -443,7 +448,8 @@ public class CaptureManager {
 					mStManager.getSurfaceTexture());
 			mEGLWrapper.swapBuffers(getNewImage);
 		} catch (Exception e){
-			Log.d(TAG,"Error encountered in drawFrame = " + e.getMessage() + e.getStackTrace());
+			Log.d(TAG,"Error encountered in drawFrame = " + e.getMessage());
+			e.printStackTrace();
 		}
 	}
 	/**
@@ -468,8 +474,33 @@ public class CaptureManager {
 		}
 		return frameIdx*frameTimeUs;
 	}
+	
+	private String checkVideoEffect(String videoEffect) {
+		if (videoEffect == null){
+			videoEffect = PreferenceManager.getDefaultSharedPreferences(mContext)
+					.getString("video_effect_key", "sorbel");
+		}
+		if (videoEffect.contains("none")) {
+			return STextureRender.FRAGMENT_SHADER;
+		} else if (videoEffect.contains("sorbel")) {
+			return STextureRender.SORBEL_FRAGMENT_SHADER;
+		} else if (videoEffect.contains("julia")) {
+			return STextureRender.JULIA_FRAGMENT_SHADER;
+		} 
+		return STextureRender.FRAGMENT_SHADER;
+	}
 
-
+	public void changeFragmentShader(final String videoEffect) {
+		if (mStManager==null) return;
+		
+		postRenderThread(new Runnable(){
+			@Override
+			public void run() {
+				mStManager.changeFragmentShader(checkVideoEffect(videoEffect));
+			}
+		});
+	}
+	
 }
 
 class AudioHandler extends Handler{

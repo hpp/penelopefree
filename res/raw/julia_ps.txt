@@ -1,0 +1,65 @@
+#extension GL_OES_EGL_image_external : require
+precision mediump float;
+varying vec2 vTextureCoord;
+uniform sampler2D calcTexture;
+uniform samplerExternalOES sTexture;
+uniform vec2 juliaC;
+uniform int juliaIter;
+uniform int time;
+
+void main() {
+	//Julia Calc
+	vec2 z;
+	int iter = juliaIter;
+	float scale = 10.0 / float(time);
+	z.x = scale * 3.0 * (vTextureCoord.x - 0.5);
+	z.y = scale * 2.0 * (vTextureCoord.y - 0.5);
+	
+	//"	float " +
+	int i;
+	if (scale < 0.5) {
+		vec4 temp = texture2D(calcTexture, vTextureCoord);
+		z.x = temp.x;
+		z.y = temp.y;
+		int start = int(temp.z);
+		vec3 nex = nextZ(start,)
+		z = nex.xy;
+		if (nex.z==1.0){
+		//Julia MIIM Algorithm
+		} else {
+			for(i=start; i<start+iter; ++i){
+				vec3 r = nextZ(i);
+				z = nex.xy;
+				if (nex.z==1.0) break;
+			}
+		}
+	} else {
+   	for(i=0; i<iter; i++) {
+			vec3 nex = nextZ(i);
+			z = nex.xy;
+			if (nex.z==1.0) break;
+		}
+	}
+	
+   float hue = 0.0;
+	if (i == juliaIter) {
+		hue = 0.0;
+	} else {
+		//"		hue = 1.0;"
+		hue = float(i) / float(iters);
+   }
+	if (z.x == 0.0 && z.y == 0.0) {
+		if (hue == 0.0) {
+		}
+	}
+	gl_FragColor = vec4(z.x,z.y,hue,iters);
+}
+vec3 nextZ(int i, vec2 z)
+	vec3 nex;
+	float x = (z.x * z.x - z.y * z.y) + juliaC.x;
+	float y = (z.y * z.x + z.x * z.y) + juliaC.y;
+	if((x * x + y * y) > 4.0) nex.z=1.0;
+	nex.x = x;
+	nex.y = y;
+	return nex;
+}

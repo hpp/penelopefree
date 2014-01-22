@@ -69,10 +69,16 @@ public class PurchaseDialog extends DialogFragment{
     	return this;
     }
     
+    public PurchaseDialog setMId1(int id){
+    	mId1 = id;
+    	return this;
+    }
+    
     public PurchaseDialog setMId2(int id){
     	mId2 = id;
     	return this;
     }
+    
     
     public PurchaseDialog setButton2(int id, DialogInterface.OnClickListener listener){
     	button2id = id;
@@ -93,7 +99,7 @@ public class PurchaseDialog extends DialogFragment{
 		Bundle bundle=getArguments();
 		//Activity act = getActivity();
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        String msg = getString(mId1) + " " + sku + "?\n\n" +
+        String msg = getString(mId1) +
         		pm.priceList.get(pm.skuList.indexOf(sku)) +	getString(mId2);
         builder.setMessage(msg)
             	.setPositiveButton(button1id, listener1);

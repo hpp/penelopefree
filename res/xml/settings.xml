@@ -36,14 +36,6 @@
     	android:key="sound_category_key"
         android:title="@string/sound_category">
 	    <com.harmonicprocesses.penelopefree.settings.SeekBarPreference
-		    android:key="sound_wet_dry_key"
-	    	android:title="@string/wet_dry_ratio"
-	    	android:summary="@string/wet_dry_ratio_summary"
-	    	android:dialogMessage="@string/wet_dry_ratio_dialog"
-	    	android:defaultValue="92"
-	    	android:text="@string/wet_dry_ratio_text"
-	    	android:max="100"/>
-	    <com.harmonicprocesses.penelopefree.settings.SeekBarPreference
 		    android:key="sound_buffer_size_key"
 	    	android:title="@string/buff_size_int"
 	    	android:summary="@string/buff_size_int_summary"
@@ -55,10 +47,6 @@
             android:key="invert_audio_key"
             android:summary="@string/inver_audio_summary"
             android:title="@string/invert_phase"
-            android:defaultValue="false"/>
-        <CheckBoxPreference
-            android:key="enable_reverb_key"
-            android:title="@string/enable_reverb"
             android:defaultValue="false"/>
     </PreferenceCategory>
 	

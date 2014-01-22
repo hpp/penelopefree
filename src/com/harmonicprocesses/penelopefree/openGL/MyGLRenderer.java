@@ -108,8 +108,8 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     private Paint mLabelPaint;
     //private LabelMaker mLabels;
     //private NumericSprite mNumericSprite;
-    private float mWidth = (float) 1.0;
-    private float mHeight = (float) 1.0;
+    private int mWidth = 1;
+    private int mHeight = 1;
     
     /** This will be used to pass in the texture. */
     private int mTextureUniformHandle;
@@ -276,13 +276,14 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
 
         // Set the camera position (View matrix)
-        Matrix.setLookAtM(mVMatrix, 0, 0, 0, -3, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
+        Matrix.setLookAtM(mVMatrix, 0, 0f, 0f, -3f, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
 
         // Calculate the projection and view transformation
         Matrix.multiplyMM(mMVPMatrix, 0, mProjMatrix, 0, mVMatrix, 0);
 
         if (textureRender!=null){
-        	textureRender.drawFrame(texture,mMVPMatrix);
+        	textureRender.surafaceChanged(mWidth, mHeight);
+        	textureRender.drawFrame(texture,mMVPMatrix,mProjMatrix);
         }
         // move particles and calc bins
         //mParticleBins.clear();
@@ -346,18 +347,21 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         }
 	}
 		
-
+	float mRatio;
+	
 	@Override
     public void onSurfaceChanged(GL10 unused, int width, int height) {
         // Adjust the viewport based on geometry changes,
         // such as screen rotation
         GLES20.glViewport(0, 0, width, height);
 
-        float ratio = (float) width / height;
-
+        mRatio = (float) width / (float) height;
+        mHeight = height;
+        mWidth = width;
+        
         // this projection matrix is applied to object coordinates
         // in the onDrawFrame() method
-        Matrix.frustumM(mProjMatrix, 0, -ratio, ratio, -1, 1, 3, 7);
+        Matrix.frustumM(mProjMatrix, 0, -mRatio, mRatio, -1, 1, 3, 7);
 
     }
 

@@ -5,6 +5,7 @@ import org.json.JSONObject;
 import com.harmonicprocesses.penelopefree.PenelopeMainActivity;
 import com.harmonicprocesses.penelopefree.R;
 import com.harmonicprocesses.penelopefree.audio.AudioProcessor;
+import com.harmonicprocesses.penelopefree.camera.Pcamera;
 import com.hpp.billing.PurchaseDialog;
 import com.hpp.billing.PurchaseManager;
 
@@ -21,6 +22,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
+import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
@@ -29,7 +31,6 @@ import android.widget.Toast;
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class SettingsFragment extends PreferenceFragment {
 	
-	private Context mContext;
 	private int mXmlId;
 	private String mKey;
 	private Resources mRes;
@@ -38,17 +39,25 @@ public class SettingsFragment extends PreferenceFragment {
 	//private PenelopeMainActivity mPan;
 	private PurchaseManager mPurchaseManager;
 	private AudioProcessor mAudioProc;
+	private Pcamera mPcam = null;
 	public CheckBoxPreference checkPref;
+	private Bundle constructorArgs = null;
 	
     public SettingsFragment() {
-		
 	}
     
     public SettingsFragment setXmlId(int xmlId){
-    	mXmlId = xmlId;
+    	checkConstructorArgs();
+    	constructorArgs.putInt("mXmlId", xmlId);
+    	this.setArguments(constructorArgs);
     	return this;
     }
 
+    private void checkConstructorArgs(){
+    	if (constructorArgs == null){
+    		constructorArgs = new Bundle();
+    	}
+    }
 
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -57,7 +66,7 @@ public class SettingsFragment extends PreferenceFragment {
         mRes = mAct.getResources();
         mFrag = getFragmentManager();
         // Load the preferences from an XML resource
-        addPreferencesFromResource(mXmlId);
+        addPreferencesFromResource(getArguments().getInt("mXmlId"));
         getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(preferenceChangeListener);
     }
     
@@ -121,6 +130,7 @@ public class SettingsFragment extends PreferenceFragment {
         				.setAudioProcessor(mAudioProc)
         				.setSettingsFragment(this)
         				.setSku(mPurchaseManager.adInfinitum)
+        				.setMId1(R.string.dialog_purchase_buy_ad_infinitum)
         				.setMId2(R.string.dialog_purchase_adInfinitum)
         				.setButton1(R.string.dialog_button_more_info, 
         					new DialogInterface.OnClickListener() {
@@ -133,8 +143,8 @@ public class SettingsFragment extends PreferenceFragment {
 							});
         		dialog.show(mFrag, "PurchasePitchCorrect");
         		return true;
-        	}
-        }	
+        	} 
+        } 	
     	return false;
     }
     
@@ -175,21 +185,20 @@ public class SettingsFragment extends PreferenceFragment {
 				mAudioProc.updateReverb(sharedPreferences.getBoolean(key,true));
 			} else if (key.contains("sound_wet_dry_key")){
 				mAudioProc.updateWetDry(sharedPreferences.getInt(key,92));
-			}
-			
+			} else if (key.contains("video_effect_key")){
+	    		if (mPcam == null) return;
+	    		mPcam.ChangeVideoEffect(sharedPreferences.getString(key,"sorbel"));
+	    	} else if (key.contains("enable_tone_generator_key")){
+	    		mAudioProc.updateToneGenerator(sharedPreferences.getBoolean(key,false));
+	    	}
 		}
 	};
 	
-	
-
-	public void setContext(Context context) {
-		mContext = context;
-		
-	}
 
 	public SettingsFragment setPurchaseManager(PurchaseManager pm) {
+		
 		mPurchaseManager = pm;
-		return this;
+    	return this;
 	}
 	
 	public SettingsFragment setAudioProcessor(AudioProcessor ap) {
@@ -197,7 +206,11 @@ public class SettingsFragment extends PreferenceFragment {
 		return this;
 	}
 	
-
+	public SettingsFragment setPcam(Pcamera pc){
+		mPcam = pc;
+		return this;
+	}
+	
 }
   
 

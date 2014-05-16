@@ -1,6 +1,7 @@
 package com.harmonicprocesses.penelopefree;
 
 import java.lang.ref.WeakReference;
+
 import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -12,6 +13,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.android.vending.billing.IInAppBillingService;
+import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.MapBuilder;
 import com.harmonicprocesses.penelopefree.R;
 import com.harmonicprocesses.penelopefree.audio.AudioConstants;
 import com.harmonicprocesses.penelopefree.audio.AudioOnAir;
@@ -93,6 +96,7 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -525,6 +529,9 @@ public class PenelopeMainActivity extends Activity implements TextureView.Surfac
 		//mAudioOnAir.StopAudio();
 		mAudioProcessor.stopAudio();
 		mPcamera.stop(mOpenGLViewGroup);
+		
+		//stop google analytics tracker
+		EasyTracker.getInstance(this).activityStop(this);
 	}
 	
 	
@@ -550,6 +557,14 @@ public class PenelopeMainActivity extends Activity implements TextureView.Surfac
 			mPcamera.start();
 			}
 		}
+	}
+	
+	@Override
+	public void onStart(){
+		super.onStart();
+		
+		//start the google analytics tracker
+		EasyTracker.getInstance(this).activityStart(this);  
 	}
 	
 	
@@ -843,7 +858,8 @@ public class PenelopeMainActivity extends Activity implements TextureView.Surfac
 	
 	
 	public boolean onOptionsItemSelected(MenuItem item){
-		   
+		trackItemSelected(item);
+		
 		mHideHandler.removeCallbacks(mHideRunnable);
 		if (item.getItemId() == R.id.options_menu_item) {
 			Intent intent = new Intent(this, SettingsActivity.class);	
@@ -870,6 +886,20 @@ public class PenelopeMainActivity extends Activity implements TextureView.Surfac
 		return false;
 	}
 	
+	private void trackItemSelected(MenuItem item) {
+		EasyTracker easyTracker = EasyTracker.getInstance(this);
+
+		// MapBuilder.createEvent().build() returns a Map of event fields and values
+		// that are set and sent with the hit.
+		easyTracker.send(MapBuilder.createEvent(
+				"options_menu",     // Event category (required)
+				(String) item.getTitle(),  // Event action (required)
+				item.toString(),   // Event label
+				null)            // Event value
+		.build());
+	}
+
+
 	private void setPcam(Pcamera mPcamera2) {
 		// TODO Auto-generated method stub
 		

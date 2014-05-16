@@ -47,20 +47,20 @@ public class MyEGLWrapper {
 
 	private MyGLSurfaceView mView;
 
-	public MyEGLWrapper(Context context,Surface codecInputSurface, MyGLSurfaceView view) {
+	public MyEGLWrapper(Context context, MyGLSurfaceView view) {
 		
 		NoteSpectrum = DSPEngine.staticCalcNoteBins(AudioConstants.defaultBufferSize*2, 
 				AudioConstants.sampleRate);
 		// Create an OpenGL ES 2.0 context.
 		mView = view;
-		if (codecInputSurface != null) {
+		/*if (codecInputSurface != null) {
 			//mSurface = camSurfView.getHolder().getSurface();
 			mSurface = codecInputSurface;
 			//camSurfView.getHolder().addCallback(getSurfaceCallback());
 			//eglSetup();
 		} else {
 			//;
-		}
+		}*/
         
         
         //SurfaceHolder
@@ -253,7 +253,7 @@ public class MyEGLWrapper {
     		EGL14.eglDestroySurface(mEGLDisplay,mEGLRecordSurface);
     		checkEglError("eglDestroySurface");
     		
-    		mEGLSurface = EGL14.eglCreateWindowSurface(mEGLDisplay, configs[0], mSurface,
+    		mEGLSurface = EGL14.eglCreateWindowSurface(mEGLDisplay, configs[0], surface,
     				surfaceAttribs, 0);
     		checkEglError("eglCreateWindowSurface");
     	}

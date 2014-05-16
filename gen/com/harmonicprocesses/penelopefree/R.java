@@ -9,16 +9,16 @@ package com.harmonicprocesses.penelopefree;
 
 public final class R {
     public static final class array {
-        public static final int input_devices_entries=0x7f080000;
-        public static final int input_devices_keys=0x7f080001;
-        public static final int output_devices_entries=0x7f080002;
-        public static final int output_devices_keys=0x7f080003;
-        /**  <item name="video_effect_julia">Julia Dream</item> 
+        public static final int input_devices_entries=0x7f090000;
+        public static final int input_devices_keys=0x7f090001;
+        public static final int output_devices_entries=0x7f090002;
+        public static final int output_devices_keys=0x7f090003;
+        /**   <item name="video_effect_julia">Julia Dream</item>  
          */
-        public static final int record_effect_entries=0x7f080004;
-        /**  <item name="video_effect_julia">julia</item> 
+        public static final int record_effect_entries=0x7f090004;
+        /**   <item name="video_effect_julia">julia</item> 
          */
-        public static final int record_effect_values=0x7f080005;
+        public static final int record_effect_values=0x7f090005;
     }
     public static final class attr {
         /** <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
@@ -30,8 +30,16 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
          */
         public static final int buttonBarStyle=0x7f010000;
     }
+    public static final class bool {
+        /** Enable automatic activity tracking
+         */
+        public static final int ga_autoActivityTracking=0x7f070000;
+        /** Enable automatic exception tracking
+         */
+        public static final int ga_reportUncaughtExceptions=0x7f070001;
+    }
     public static final class color {
-        public static final int black_overlay=0x7f060000;
+        public static final int black_overlay=0x7f080000;
     }
     public static final class drawable {
         public static final int collections_cloud=0x7f020000;
@@ -56,21 +64,21 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int screen=0x7f020013;
     }
     public static final class id {
-        public static final int Onair_dummy_button=0x7f0a0008;
-        public static final int dummy_button=0x7f0a0003;
-        public static final int fragment_container=0x7f0a0005;
-        public static final int fullscreen_content=0x7f0a0001;
-        public static final int fullscreen_content_controls=0x7f0a0002;
-        public static final int glview=0x7f0a0006;
-        public static final int onair_content_controls=0x7f0a0007;
-        public static final int opengl_container=0x7f0a0000;
-        public static final int options_menu_item=0x7f0a000d;
-        public static final int options_menu_item_help=0x7f0a000e;
-        public static final int options_menu_item_record=0x7f0a000b;
-        public static final int options_menu_special_efects=0x7f0a000c;
-        public static final int record_button=0x7f0a0004;
-        public static final int settingsActivity=0x7f0a0009;
-        public static final int settingsFragmentView=0x7f0a000a;
+        public static final int Onair_dummy_button=0x7f0b0008;
+        public static final int dummy_button=0x7f0b0003;
+        public static final int fragment_container=0x7f0b0005;
+        public static final int fullscreen_content=0x7f0b0001;
+        public static final int fullscreen_content_controls=0x7f0b0002;
+        public static final int glview=0x7f0b0006;
+        public static final int onair_content_controls=0x7f0b0007;
+        public static final int opengl_container=0x7f0b0000;
+        public static final int options_menu_item=0x7f0b000d;
+        public static final int options_menu_item_help=0x7f0b000e;
+        public static final int options_menu_item_record=0x7f0b000b;
+        public static final int options_menu_special_efects=0x7f0b000c;
+        public static final int record_button=0x7f0b0004;
+        public static final int settingsActivity=0x7f0b0009;
+        public static final int settingsFragmentView=0x7f0b000a;
     }
     public static final class layout {
         public static final int activity_fullscreen=0x7f030000;
@@ -90,97 +98,101 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int particlefilter=0x7f050009;
     }
     public static final class string {
-        public static final int OnAirFalse=0x7f070002;
-        public static final int OnAirTrue=0x7f070001;
-        public static final int SEFX_pitch_correct=0x7f07003d;
-        public static final int SEFX_pitch_correct_dialog=0x7f07003f;
-        public static final int SEFX_pitch_correct_text=0x7f070040;
-        public static final int SEFX_pitch_corrects_summary=0x7f07003e;
-        public static final int about=0x7f07000f;
-        public static final int accelerometer=0x7f070017;
-        public static final int addons=0x7f070009;
-        public static final int app_name=0x7f070000;
-        public static final int back=0x7f07003b;
-        public static final int blank=0x7f070012;
-        public static final int buff_size_int=0x7f070031;
-        public static final int buff_size_int_dialog=0x7f070033;
-        public static final int buff_size_int_summary=0x7f070032;
-        public static final int buff_size_int_text=0x7f070034;
-        public static final int devices=0x7f070004;
-        public static final int dialog_button_buy=0x7f070044;
-        public static final int dialog_button_buy_mug=0x7f070055;
-        public static final int dialog_button_enjoy=0x7f070026;
-        public static final int dialog_button_more_info=0x7f070022;
-        public static final int dialog_button_next_time=0x7f070021;
-        public static final int dialog_button_ok=0x7f070024;
-        public static final int dialog_button_try=0x7f070043;
-        public static final int dialog_more_tries=0x7f070046;
+        public static final int OnAirFalse=0x7f060004;
+        public static final int OnAirTrue=0x7f060003;
+        public static final int SEFX_pitch_correct=0x7f06003f;
+        public static final int SEFX_pitch_correct_dialog=0x7f060041;
+        public static final int SEFX_pitch_correct_text=0x7f060042;
+        public static final int SEFX_pitch_corrects_summary=0x7f060040;
+        public static final int about=0x7f060011;
+        public static final int accelerometer=0x7f060019;
+        public static final int addons=0x7f06000b;
+        public static final int app_name=0x7f060002;
+        public static final int back=0x7f06003d;
+        public static final int blank=0x7f060014;
+        public static final int buff_size_int=0x7f060033;
+        public static final int buff_size_int_dialog=0x7f060035;
+        public static final int buff_size_int_summary=0x7f060034;
+        public static final int buff_size_int_text=0x7f060036;
+        public static final int devices=0x7f060006;
+        public static final int dialog_button_buy=0x7f060046;
+        public static final int dialog_button_buy_mug=0x7f060057;
+        public static final int dialog_button_enjoy=0x7f060028;
+        public static final int dialog_button_more_info=0x7f060024;
+        public static final int dialog_button_next_time=0x7f060023;
+        public static final int dialog_button_ok=0x7f060026;
+        public static final int dialog_button_try=0x7f060045;
+        public static final int dialog_more_tries=0x7f060048;
         /**   From Here on out translations need to be updated 
          */
-        public static final int dialog_penelope_full_messsage_capture=0x7f070056;
-        public static final int dialog_penelope_full_messsage_record=0x7f070020;
-        public static final int dialog_penelope_full_messsage_usb=0x7f07001f;
-        public static final int dialog_purchase1=0x7f070036;
-        public static final int dialog_purchase2=0x7f070037;
-        public static final int dialog_purchase_adInfinitum=0x7f07004d;
-        public static final int dialog_purchase_buy_ad_infinitum=0x7f07004e;
-        public static final int dialog_purchase_error=0x7f070049;
-        public static final int dialog_purchase_fail=0x7f070038;
-        public static final int dialog_purchase_pitch_correct=0x7f070041;
-        public static final int dialog_purchase_please_try=0x7f070042;
-        public static final int dialog_purchase_tries_exhausted1=0x7f070047;
-        public static final int dialog_purchase_tries_exhausted2=0x7f070048;
+        public static final int dialog_penelope_full_messsage_capture=0x7f060058;
+        public static final int dialog_penelope_full_messsage_record=0x7f060022;
+        public static final int dialog_penelope_full_messsage_usb=0x7f060021;
+        public static final int dialog_purchase1=0x7f060038;
+        public static final int dialog_purchase2=0x7f060039;
+        public static final int dialog_purchase_adInfinitum=0x7f06004f;
+        public static final int dialog_purchase_buy_ad_infinitum=0x7f060050;
+        public static final int dialog_purchase_error=0x7f06004b;
+        public static final int dialog_purchase_fail=0x7f06003a;
+        public static final int dialog_purchase_pitch_correct=0x7f060043;
+        public static final int dialog_purchase_please_try=0x7f060044;
+        public static final int dialog_purchase_tries_exhausted1=0x7f060049;
+        public static final int dialog_purchase_tries_exhausted2=0x7f06004a;
         /**   From Here on out translations need to be added 
          */
-        public static final int dialog_rate_penelope=0x7f070035;
-        public static final int dialog_restart_simulation=0x7f070023;
-        public static final int dialog_welcome_to_new_features=0x7f070054;
-        public static final int dialog_welcome_to_penelope=0x7f070025;
-        public static final int dialog_you_have=0x7f070045;
-        public static final int enable_pitch_correct=0x7f07003c;
-        public static final int enable_reverb=0x7f070027;
-        public static final int enable_tone_generator=0x7f070051;
-        public static final int enable_tone_generator_description=0x7f070052;
-        public static final int full_version_presale=0x7f07004c;
-        public static final int go_onair=0x7f07001a;
-        public static final int inUSB_default=0x7f07001c;
-        public static final int input_default=0x7f07001b;
-        public static final int input_device=0x7f070005;
-        public static final int inver_audio_summary=0x7f070028;
-        public static final int invert_phase=0x7f070015;
-        public static final int number_of_particles=0x7f070029;
-        public static final int number_of_particles_dialog=0x7f07002b;
-        public static final int number_of_particles_summary=0x7f07002a;
-        public static final int number_of_particles_text=0x7f07002c;
-        public static final int open_account=0x7f07000c;
-        public static final int option_help=0x7f070011;
-        public static final int option_record=0x7f070010;
-        public static final int option_special_effects=0x7f070039;
-        public static final int options=0x7f07000d;
-        public static final int outUSB_default=0x7f07001e;
-        public static final int output_audio=0x7f070018;
-        public static final int output_default=0x7f07001d;
-        public static final int output_device=0x7f070006;
-        public static final int particle_diffusion=0x7f070008;
-        public static final int performance_options_category=0x7f070013;
-        public static final int premium_effects=0x7f07004b;
-        public static final int record_button=0x7f070003;
-        public static final int record_effect=0x7f070050;
-        public static final int record_effect_value_default=0x7f070053;
-        public static final int report_problem=0x7f07000a;
-        public static final int shapes=0x7f07000b;
-        public static final int sound_category=0x7f070014;
-        public static final int special_effects=0x7f07003a;
-        public static final int standard_effects=0x7f07004a;
-        public static final int touch_screen=0x7f070019;
-        public static final int tutorial=0x7f07000e;
-        public static final int unable_to_connect=0x7f07004f;
-        public static final int visualization=0x7f070016;
-        public static final int visualizations=0x7f070007;
-        public static final int wet_dry_ratio=0x7f07002d;
-        public static final int wet_dry_ratio_dialog=0x7f07002f;
-        public static final int wet_dry_ratio_summary=0x7f07002e;
-        public static final int wet_dry_ratio_text=0x7f070030;
+        public static final int dialog_rate_penelope=0x7f060037;
+        public static final int dialog_restart_simulation=0x7f060025;
+        public static final int dialog_welcome_to_new_features=0x7f060056;
+        public static final int dialog_welcome_to_penelope=0x7f060027;
+        public static final int dialog_you_have=0x7f060047;
+        public static final int enable_pitch_correct=0x7f06003e;
+        public static final int enable_reverb=0x7f060029;
+        public static final int enable_tone_generator=0x7f060053;
+        public static final int enable_tone_generator_description=0x7f060054;
+        public static final int full_version_presale=0x7f06004e;
+        public static final int ga_appName=0x7f060001;
+        /** Replace placeholder ID with your tracking ID
+         */
+        public static final int ga_trackingId=0x7f060000;
+        public static final int go_onair=0x7f06001c;
+        public static final int inUSB_default=0x7f06001e;
+        public static final int input_default=0x7f06001d;
+        public static final int input_device=0x7f060007;
+        public static final int inver_audio_summary=0x7f06002a;
+        public static final int invert_phase=0x7f060017;
+        public static final int number_of_particles=0x7f06002b;
+        public static final int number_of_particles_dialog=0x7f06002d;
+        public static final int number_of_particles_summary=0x7f06002c;
+        public static final int number_of_particles_text=0x7f06002e;
+        public static final int open_account=0x7f06000e;
+        public static final int option_help=0x7f060013;
+        public static final int option_record=0x7f060012;
+        public static final int option_special_effects=0x7f06003b;
+        public static final int options=0x7f06000f;
+        public static final int outUSB_default=0x7f060020;
+        public static final int output_audio=0x7f06001a;
+        public static final int output_default=0x7f06001f;
+        public static final int output_device=0x7f060008;
+        public static final int particle_diffusion=0x7f06000a;
+        public static final int performance_options_category=0x7f060015;
+        public static final int premium_effects=0x7f06004d;
+        public static final int record_button=0x7f060005;
+        public static final int record_effect=0x7f060052;
+        public static final int record_effect_value_default=0x7f060055;
+        public static final int report_problem=0x7f06000c;
+        public static final int shapes=0x7f06000d;
+        public static final int sound_category=0x7f060016;
+        public static final int special_effects=0x7f06003c;
+        public static final int standard_effects=0x7f06004c;
+        public static final int touch_screen=0x7f06001b;
+        public static final int tutorial=0x7f060010;
+        public static final int unable_to_connect=0x7f060051;
+        public static final int visualization=0x7f060018;
+        public static final int visualizations=0x7f060009;
+        public static final int wet_dry_ratio=0x7f06002f;
+        public static final int wet_dry_ratio_dialog=0x7f060031;
+        public static final int wet_dry_ratio_summary=0x7f060030;
+        public static final int wet_dry_ratio_text=0x7f060032;
     }
     public static final class style {
         /** 
@@ -205,17 +217,17 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
     
  API 14 theme customizations can go here. 
          */
-        public static final int AppBaseTheme=0x7f090000;
+        public static final int AppBaseTheme=0x7f0a0000;
         /**  Application theme. 
  All customizations that are NOT specific to a particular API-level can go here. 
          */
-        public static final int AppTheme=0x7f090001;
-        public static final int ButtonBar=0x7f090003;
-        public static final int ButtonBarButton=0x7f090002;
-        public static final int FullscreenActionBarStyle=0x7f090005;
+        public static final int AppTheme=0x7f0a0001;
+        public static final int ButtonBar=0x7f0a0003;
+        public static final int ButtonBarButton=0x7f0a0002;
+        public static final int FullscreenActionBarStyle=0x7f0a0005;
         /**  <style name="FullscreenTheme" parent="android:Theme.NoTitleBar"> 
          */
-        public static final int FullscreenTheme=0x7f090004;
+        public static final int FullscreenTheme=0x7f0a0004;
     }
     public static final class xml {
         public static final int addons=0x7f040000;

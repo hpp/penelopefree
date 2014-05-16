@@ -171,7 +171,7 @@ public class MyMediaCodec{
 		int outBuffIdx = codec.dequeueOutputBuffer(buffInfo, 16000);
 		if (outBuffIdx == MediaCodec.INFO_TRY_AGAIN_LATER) {
 			if (!EOS) {
-				Log.d(TAG, "output buffer dequeued with 'try again later' isAudio = " + isAudioCodec);
+				//Log.d(TAG, "output buffer dequeued with 'try again later' isAudio = " + isAudioCodec);
 				return;
 			} else if (isAudioCodec || (!useInputSurface && !codecManager.useStaticBitmap)) {
 				Log.d(TAG, "queueing EOS to inputBuffer");

@@ -41,9 +41,11 @@ public class STextureRender {
             "attribute vec4 aPosition;\n" +
             "attribute vec4 aTextureCoord;\n" +
             "varying vec2 vTextureCoord;\n" +
+            "varying vec2 calcTexCoord;\n" +
             "void main() {\n" +
             "  gl_Position = uMVPMatrix * aPosition;\n" +
             "  vTextureCoord = (uSTMatrix * aTextureCoord).xy;\n" +
+            "  calcTexCoord = aTextureCoord.xy;\n" +
             "}\n";
 
     public static final String FRAGMENT_SHADER =
@@ -122,13 +124,15 @@ public class STextureRender {
 			"#extension GL_OES_EGL_image_external : require\n" +
     		"precision mediump float;\n" +      
     		"varying vec2 vTextureCoord;\n" +
-    		"uniform sampler2D calcTexture;\n" +
+    		"varying vec2 calcTexCoord;\n" +
+            "uniform sampler2D calcTexture;\n" +
     		"uniform samplerExternalOES sTexture;\n" +
     		//"uniform sampler2d juliaKnot;\n" +
     		"uniform vec2 juliaC;\n" +
 			"uniform int juliaIter;\n" +
 			"uniform int time;\n" +
 			"bool nextZ(int i, inout vec2 z);\n" +
+			"bool prevZ(int i, inout vec2 z);\n" +
 			"void denormZ(inout vec2 zFloats);\n" +
 			"float normZ(float zFloat);\n" +
 			"void main() {\n" +
@@ -141,12 +145,17 @@ public class STextureRender {
 			//"	float " +
 			"	int i;\n" +
 			"	if (scale < 0.5) {\n" +
-			"		vec4 temp = texture2D(calcTexture, vTextureCoord);\n" +
+			"		float mode = float(time)-mod(float(time),10.0);" +
+			"		vec4 temp = texture2D(calcTexture, calcTexCoord,float(time-1)*scale/10.0);\n" +
 			"		denormZ(temp.xy);\n" +
 			"		z = temp.xy;\n" +
-			"		int start = int(temp.z);\n" +
+			"		int start = int(temp.w*mode+temp.z*float(iter));\n" +
 			"		if (nextZ(start,temp.xy)) {\n" +
 						//Julia MIIM Algorithm
+			"			int finish = max(start - iter,0);\n" +
+			"			for(i=start; i>finish; i) {\n" +
+			"				if (prevZ(i,z)) break;\n" +
+			"			}\n" +
 			"		} else {\n" +
 			"			for(i=start; i<start+iter; ++i) {\n" +
 			"				if (nextZ(i,z)) break;\n" +
@@ -158,18 +167,12 @@ public class STextureRender {
 			"		}\n" +
 			"	}\n" +
 			"	\n" +
-			"   float hue = 0.0;" +
-			"	if (i == juliaIter) {\n"+
-			"		hue = 0.0;\n" +
-			"	} else {\n" +
-			//"		hue = 1.0;" +
-			"		hue = float(i) / float(iter );\n" +	
-			"   }\n" +
-			"	if (z.x == 0.0 && z.y == 0.0) {\n" +
-			"		if (hue == 0.0) {\n" +
-			"		}\n" +
-			"	}\n" +
-			"	gl_FragColor = vec4(normZ(z.x),normZ(z.y),hue,iter);\n" +
+			"	float hue = mod(float(i),float(iter));\n" +
+			"	hue = (float(i)-hue) / float(iter);\n" +	
+			"	float next = float(time)+1.0;\n" +
+			"	next = (next-mod(next,10.0))/10.0;\n" +
+			"	float alpha = ((float(i)-mod(float(i),float(iter)))/float(iter))/next;\n" +
+			"	gl_FragColor = vec4(normZ(z.x),normZ(z.y),hue,alpha);\n" +
 			"}\n" +
 			
 			"\n" +
@@ -189,7 +192,21 @@ public class STextureRender {
 			"	z.x = x;\n" +
 			"	z.y = y;\n" +
 			"	return(false);\n" +
+			"}\n" +
+			
+			"bool prevZ(int i, inout vec2 z) {\n" +
+			"   float s = 2.0*mod(float(i),2.0)-1.0;\n 	 " +
+			"	float real = z.x-juliaC.x;\n" +
+			"	float imag = z.y-juliaC.y;\n" +
+			"	float mag = sqrt(real*real + imag*imag);\n" +
+			"   float x = s*sqrt((mag + real)/2.0);\n" +
+			"	float y = s*sign(imag)*sqrt((mag-real)/2.0);\n" +
+			"	if((x * x + y * y) < 4.0) return(true);\n" +
+			"	z.x = x;\n" +
+			"	z.y = y;\n" +
+			"	return(false);\n" +
 			"}\n";
+	
 	
     public static final String FRAGMENT_SHADER2 =
             "precision mediump float;\n" +      
@@ -197,7 +214,7 @@ public class STextureRender {
             "uniform sampler2D displayTexture;\n" +
             "void main() {\n" +
             "  vec4 color = texture2D(displayTexture, vTextureCoord);\n" +
-            "  gl_FragColor = vec4(color.r,color.g,color.b,color.a);\n" +
+            "  gl_FragColor = vec4(color.r,color.g,color.b,1.0);\n" +
             
             "}\n";
 	
@@ -258,6 +275,9 @@ public class STextureRender {
         //mGLView = glView;
         Matrix.setIdentityM(mSTMatrix, 0);
         jd = new JuliaDream().setRenderer(this);
+        jd.mTriangleVertices = ByteBuffer.allocateDirect(
+                mTriangleVerticesData.length * FLOAT_SIZE_BYTES)
+                .order(ByteOrder.nativeOrder()).asFloatBuffer();
     }
 
     public int getTextureId() {

@@ -117,12 +117,12 @@
 	<string-array name="record_effect_entries">
 	    <item name="video_effect_none">None</item>
 	    <item name="video_effect_sorbel">Edge Highlight</item>
-	    <!-- <item name="video_effect_julia">Julia Dream</item> --> 
+	    <!--  <item name="video_effect_julia">Julia Dream</item>  -->
 	</string-array>
 	<string-array name="record_effect_values">
 	    <item name="video_effect_none">none</item>
 	    <item name="video_effect_sorbel">sorbel</item>
-	    <!-- <item name="video_effect_julia">julia</item> --> 
+	    <!--  <item name="video_effect_julia">julia</item> --> 
 	</string-array>
 	<string name="record_effect_value_default">sorbel</string>
 	

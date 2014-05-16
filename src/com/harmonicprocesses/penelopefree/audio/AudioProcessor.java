@@ -36,7 +36,7 @@ public class AudioProcessor extends HandlerThread{
 	public volatile float pitchCorrectLevel;
 	private Handler spectrumUpdateHandler = null, noteUpdateHandler = null,
 			processBufferUpdateHandler = null;
-	private int mNote;
+	private int mNote = 32; //throws error at -1 for some reason
 	private double phase = 0.0;
 	
 
@@ -209,6 +209,7 @@ public class AudioProcessor extends HandlerThread{
 	}
 	
 	private void onNoteReady(int note){
+		if (note==-1) return;
 		mNote = note;
 	}
 	

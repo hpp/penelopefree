@@ -2,10 +2,12 @@ package com.hpp.openGL;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
+import android.opengl.Matrix;
 import android.util.Log;
 
 public class JuliaDream {
@@ -80,6 +82,8 @@ public class JuliaDream {
 	}
 
 	public void DrawDisplayFrame(float[] mMVPMatrix, float[] mSTMatrix) {
+		surafaceChanged(rain.width, rain.height);
+		
 		//Return display buffer 0
     	GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
     	rain.setView();
@@ -95,17 +99,17 @@ public class JuliaDream {
     	GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, juliaTex[0]);
     	GLES20.glUniform1i(juDisplayTextureHandle, 0);
     	
-    	rain.mTriangleVertices.position(rain.TRIANGLE_VERTICES_DATA_POS_OFFSET);
+    	mTriangleVertices.position(rain.TRIANGLE_VERTICES_DATA_POS_OFFSET);
         GLES20.glVertexAttribPointer(jaPositionHandle, 3, GLES20.GL_FLOAT, false,
-                rain.TRIANGLE_VERTICES_DATA_STRIDE_BYTES, rain.mTriangleVertices);
+                rain.TRIANGLE_VERTICES_DATA_STRIDE_BYTES, mTriangleVertices);
         rain.checkGlError("glVertexAttribPointer jaPositionHandle");
         
         GLES20.glEnableVertexAttribArray(jaPositionHandle);
         rain.checkGlError("glEnableVertexAttribArray jaPositionHandle");
 
-        rain.mTriangleVertices.position(rain.TRIANGLE_VERTICES_DATA_UV_OFFSET);
+        mTriangleVertices.position(rain.TRIANGLE_VERTICES_DATA_UV_OFFSET);
         GLES20.glVertexAttribPointer(jaTextureHandle, 2, GLES20.GL_FLOAT, false,
-        		rain.TRIANGLE_VERTICES_DATA_STRIDE_BYTES, rain.mTriangleVertices);
+        		rain.TRIANGLE_VERTICES_DATA_STRIDE_BYTES, mTriangleVertices);
         rain.checkGlError("glVertexAttribPointer jaTextureHandle");
         GLES20.glEnableVertexAttribArray(jaTextureHandle);
         rain.checkGlError("glEnableVertexAttribArray jaTextureHandle");
@@ -283,4 +287,40 @@ public class JuliaDream {
 			GLES20.glDeleteProgram(juliaDisplayProgram);
 		}
 	}
+	
+	public void surafaceChanged(int w, int h){
+    	float ratio = (float) w / (float) h;  
+    	if(mRatio==ratio)return;
+    	mRatio = ratio;
+    		
+        // Adjust the viewport based on geometry changes,
+    	if (ratio>1) { //Landscape
+        	float[] landscapeVerts = {
+                    // X, Y, Z, U, V
+                    -ratio, -1.0f, 0.0f, 0.0f, 1.0f,
+                    ratio, -1.0f, 0.0f, 1.0f, 1.0f, 
+                    -ratio,  1.0f, 0.0f, 0.0f, 0.0f,
+                    ratio,  1.0f, 0.0f, 1.0f, 0.0f,
+            };
+        	mTriangleVertices.put(landscapeVerts).position(0);
+    	} else { //Portrait
+    		float[] portraitVerts = {
+                    // X, Y, Z, U, V
+                    -ratio, -1.0f, 0.0f, 1.0f, 1.0f,
+                    ratio, -1.0f, 0.0f, 1.0f, 0.0f,
+                    -ratio,  1.0f, 0.0f, 0.0f, 1.0f,
+                    ratio,  1.0f, 0.0f, 0.0f, 0.0f,
+            };
+    		mTriangleVertices.put(portraitVerts).position(0);
+    	}
+    	 
+
+        // this projection matrix is applied to object coordinates
+        // in the onDrawFrame() method
+        //Matrix.frustumM(mProjMatrix, 0, -ratio, ratio, -1, 1, 3, 7);
+    }
+	//float[] mProjMatrix;
+	FloatBuffer mTriangleVertices;
+	float mRatio;
+
 }

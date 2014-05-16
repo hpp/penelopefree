@@ -91,7 +91,6 @@ public class PurchaseDialog extends DialogFragment{
     	listener1 = listener;
 		return this;
 	}
-
     
 	@Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {

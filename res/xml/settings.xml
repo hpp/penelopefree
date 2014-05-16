@@ -35,6 +35,7 @@
 	<PreferenceCategory 
     	android:key="sound_category_key"
         android:title="@string/sound_category">
+	    <!-- This got hard coded for 2 along the way ...
 	    <com.harmonicprocesses.penelopefree.settings.SeekBarPreference
 		    android:key="sound_buffer_size_key"
 	    	android:title="@string/buff_size_int"
@@ -42,7 +43,7 @@
 	    	android:dialogMessage="@string/buff_size_int_dialog"
 	    	android:defaultValue="2"
 	    	android:text="@string/buff_size_int_text"
-	    	android:max="8"/>
+	    	android:max="8"/>  -->
         <CheckBoxPreference
             android:key="invert_audio_key"
             android:summary="@string/inver_audio_summary"

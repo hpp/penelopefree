@@ -2,6 +2,8 @@ package com.harmonicprocesses.penelopefree.settings;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.MapBuilder;
 import com.harmonicprocesses.penelopefree.PenelopeMainActivity;
 import com.harmonicprocesses.penelopefree.R;
 import com.harmonicprocesses.penelopefree.audio.AudioProcessor;
@@ -26,6 +28,7 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
@@ -75,6 +78,8 @@ public class SettingsFragment extends PreferenceFragment {
     @Override
     public boolean onPreferenceTreeClick(PreferenceScreen prefScreen, Preference pref){
     	super.onPreferenceTreeClick(prefScreen, pref);
+    	trackPreferenceTreeClick(pref);
+    	
     	mKey = pref.getKey();
     	if (mKey.contains("devices_category_key")) {
     		// Display the fragment as the main content.
@@ -148,7 +153,32 @@ public class SettingsFragment extends PreferenceFragment {
     	return false;
     }
     
-    private void transact(int id, String title){
+    private void trackPreferenceTreeClick(Preference pref) {
+   		EasyTracker easyTracker = EasyTracker.getInstance(getActivity());
+   		// MapBuilder.createEvent().build() returns a Map of event fields and values
+   		// that are set and sent with the hit.
+   		easyTracker.send(MapBuilder.createEvent(
+   				"pref_tree_click",     // Event category (required)
+   				pref.getKey(),  // Event action (required)
+   				null,   // Event label
+   				null)            // Event value
+   		.build());
+   	}
+    
+    private void trackPreferenceChanged(String key, String value) {
+   		EasyTracker easyTracker = EasyTracker.getInstance(getActivity());
+   		// MapBuilder.createEvent().build() returns a Map of event fields and values
+   		// that are set and sent with the hit.
+   		
+   		easyTracker.send(MapBuilder.createEvent(
+   				"pref_change",     // Event category (required)
+   				key,  // Event action (required)
+   				value,   // Event label
+   				null)            // Event value
+   		.build());
+   	}
+
+	private void transact(int id, String title){
     	mFrag.beginTransaction().replace(R.id.settingsFragmentView, 
 				new SubSettingsFragment().setArguments(id))
 			.addToBackStack(null).commit();
@@ -161,6 +191,7 @@ public class SettingsFragment extends PreferenceFragment {
 		@Override
 		public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
 				String key) {
+			String value = null;
 			if (key.contains("input_device_key")||key.contains("output_device_key")){
 				mKey = key;
 				if (sharedPreferences.getString(key, "").contains(mRes.getString(R.string.inUSB_default))||
@@ -180,17 +211,27 @@ public class SettingsFragment extends PreferenceFragment {
 				dialog.setArguments(bundle);
 				dialog.show(mFrag,"RestartSimulationDialog");
 			} else if (key.contains("SEFX_pitch_correct")) {
-				mAudioProc.updatePitchCorrect(sharedPreferences.getInt(key,100));
+				int valueInt = sharedPreferences.getInt(key,100);
+				mAudioProc.updatePitchCorrect(valueInt);
+				value = Integer.toString(valueInt);
 			} else if (key.contains("enable_reverb_key")){
-				mAudioProc.updateReverb(sharedPreferences.getBoolean(key,true));
+				boolean valueBool = sharedPreferences.getBoolean(key,true);
+				mAudioProc.updateReverb(valueBool);
+				value = String.valueOf(valueBool);
 			} else if (key.contains("sound_wet_dry_key")){
+				int valueInt = sharedPreferences.getInt(key,92);
 				mAudioProc.updateWetDry(sharedPreferences.getInt(key,92));
+				value = Integer.toString(valueInt);
 			} else if (key.contains("video_effect_key")){
+				value = sharedPreferences.getString(key,"sorbel");
 	    		if (mPcam == null) return;
-	    		mPcam.ChangeVideoEffect(sharedPreferences.getString(key,"sorbel"));
+	    		mPcam.ChangeVideoEffect(value);
 	    	} else if (key.contains("enable_tone_generator_key")){
-	    		mAudioProc.updateToneGenerator(sharedPreferences.getBoolean(key,false));
+	    		boolean valueBool = sharedPreferences.getBoolean(key,false);
+	    		mAudioProc.updateToneGenerator(valueBool);
+	    		value = String.valueOf(valueBool);
 	    	}
+			trackPreferenceChanged(key, value);
 		}
 	};
 	

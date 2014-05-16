@@ -21,6 +21,8 @@ import android.preference.PreferenceManager;
 import android.view.View;
 
 import com.android.vending.billing.IInAppBillingService;
+import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.MapBuilder;
 
 public class PurchaseManager {
 	Context mContext;
@@ -178,6 +180,7 @@ public class PurchaseManager {
 						JSONObject jo = new JSONObject(purchaseData);
 						String sku = jo.getString("productId");
 						//alert("You have bought the " + sku + ". Excellent choice adventurer!");
+						onPurchaseCompleted(jo);
 					}
 					catch (JSONException e) {
 						//alert("Failed to parse purchase data.");
@@ -207,5 +210,24 @@ public class PurchaseManager {
 		return false;  
 	}
 	
+	/*
+	 * Called when a purchase is processed and verified.
+	 */
+	public void onPurchaseCompleted(JSONObject jo) throws JSONException {
 
+		// May return null if EasyTracker has not yet been initialized with a
+		// property ID.
+		EasyTracker easyTracker = EasyTracker.getInstance(mContext);
+
+		easyTracker.send(MapBuilder.createItem(
+				jo.getString("orderId"),               // (String) Transaction ID
+				jo.getString("packageName"),      // (String) Product name
+				jo.getString("productId"),                  // (String) Product SKU
+				"In App Product",        // (String) Product category
+				1.99d,                    // (Double) Product price
+				1L,                       // (Long) Product quantity
+				"USD")                    // (String) Currency code
+				.build()
+		);
+	}
 }

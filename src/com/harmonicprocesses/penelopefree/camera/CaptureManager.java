@@ -70,6 +70,8 @@ public class CaptureManager {
 	private BufferEvent.CodecBufferObserver observer = null;
 	private boolean recordingStopped = true;
 	private HandlerThread audioThread;
+	private Surface videoInputSurface = null;
+	private boolean releaseAll = false;
 		
 	public CaptureManager(Context context, 
 			Pcamera pcamera, MyGLSurfaceView glSurfaceView,AudioThru audioThru, SurfaceView camSV){
@@ -81,16 +83,17 @@ public class CaptureManager {
 		audioThread = new HandlerThread("AudioCapture");
 		audioThread.start();
 		mAudio = audioThru;
-		initCapture();
+		
 		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2&&videoOn ||
 				videoCodec != null){
 			if (!useInputSurface){ 
 				//videoCodec.videoInputSurface = camSV.getHolder().getSurface();
-				mEGLWrapper = new MyEGLWrapper(mContext, videoCodec.videoCodecInputSurface , glSurfaceView);
+				mEGLWrapper = new MyEGLWrapper(mContext, mGLView);
 			} else {
-				mEGLWrapper = new MyEGLWrapper(mContext, null, glSurfaceView);
+				mEGLWrapper = new MyEGLWrapper(mContext, mGLView);
 			}
 		}
+
 	}
 	
 	private void initCapture(){
@@ -107,11 +110,14 @@ public class CaptureManager {
 				//videoCaptureLoop();
 				videoActive=true;
 				//mGLView.beginCapture();
+				videoInputSurface  = videoCodec.videoCodecInputSurface;
 			}
 			
 			//mGLView.setOutputSurface(videoCodec.getInputSurface());
 			mediaMux = new MyMediaMux(audioCodec,videoCodec,observer);
 			
+			// now the everything is started start the recording
+			recordingStopped = false;
 
 		} catch (IllegalStateException e) {
 			Log.e("com.hpp.camera.pcam",e.toString());
@@ -122,13 +128,15 @@ public class CaptureManager {
 					"Failed to start capture", 
 					Toast.LENGTH_LONG).show();
 		} 
+		
+
 	}
 	
 	public void beginCapture(ViewGroup vg,int camId){
+		initCapture();
 		videoSurfaceViewGroup = vg;
 		if (videoOn) {
 			isRecording = true;
-			recordingStopped = false;
 		}
 		if (audioOn) mAudio.startRecord(observer,audioHandler);
 		
@@ -162,7 +170,9 @@ public class CaptureManager {
 
 				@Override
 				public void run() {
-					mediaMux.stop();
+					if (mediaMux!=null) mediaMux.stop();
+					// set up for next run
+					releaseCapture();
 				}
 				
 			},frame_delay);
@@ -183,7 +193,10 @@ public class CaptureManager {
 			stopMuxer(false);
 			mediaMux = null;
 		}
-		releaseSurfaceTexture();
+		if ( releaseAll ) {
+			releaseAll = false;
+			releaseSurfaceTexture();
+		}
 	}
 	
 	private void sendEOS2Loop(Handler mHandler, final MyMediaCodec mCodec){
@@ -234,6 +247,11 @@ public class CaptureManager {
      * Releases the SurfaceTexture.
      */
 	public void releaseSurfaceTexture() {
+		if (isRecording) {
+			endCapture();
+			releaseAll = true;
+			return;
+		}
 		mGLView.endCapture();
 		mPcamera.stopPreview();
 		//start(videoSurfaceViewGroup);
@@ -247,7 +265,7 @@ public class CaptureManager {
 	 * Post new image on CaptureThread
 	 */
 	void cameraPreviewLoop(){
-		if ( mStManager == null) return;
+		if (mStManager == null) return;
 		
 		if (videoHandler==null) videoHandler = new Handler(captureThread.getLooper());
 		
@@ -274,7 +292,7 @@ public class CaptureManager {
 			@Override
 			public void run() {
 				//draw once for screen
-				mEGLWrapper.makeCurrent(true, videoCodec.videoCodecInputSurface);
+				mEGLWrapper.makeCurrent(true, videoInputSurface);
 				//ByteBuffer frame = mStManager.drawImage();
 				drawFrame(true);
 				videoCaptureLoop(null);
@@ -286,21 +304,24 @@ public class CaptureManager {
 	 * Method to be called on GL "Render" Thread
 	 */
 	void videoCaptureLoop(final ByteBuffer frame) {
-		if (!isRecording && (useInputSurface||useStaticBitmap)) {
-			//videoHandler.removeCallbacks(runVideoCaptureLoop);
-			sendEOS2Loop(videoHandler,videoCodec);
-			recordingStopped  = true;
+		if (!recordingStopped){
+			if (!isRecording && (useInputSurface||useStaticBitmap)) {
+				//videoHandler.removeCallbacks(runVideoCaptureLoop);
+				drawFrameOnInputSurface();
+				sendEOS2Loop(videoHandler,videoCodec);
+				recordingStopped  = true;
+			} else {
+				drawFrameOnInputSurface();
+			}
 		}
 		
-		if (recordingStopped) {
-			videoHandler.postDelayed(new Runnable(){
-				@Override
-				public void run() {
-					cameraPreviewLoop();
-				}
-			}, frame_delay);
-			return;
-		}
+		videoHandler.post(new Runnable(){
+			@Override
+			public void run() {
+				cameraPreviewLoop();
+			}
+		});
+		
 		
 
 		
@@ -331,15 +352,7 @@ public class CaptureManager {
 			}
 		});
 		*/
-		drawFrameOnInputSurface();
-		
-		videoHandler.postDelayed(new Runnable(){
-			@Override
-			public void run() {
-				cameraPreviewLoop();
-			}
-		}, frame_delay);
-		
+
 		/*
 		try {
 			/*Parcel specialDelivery = Parcel.obtain();
@@ -427,7 +440,7 @@ public class CaptureManager {
 		*/
 		//draw a second time for inputSurface 
 		//ByteBuffer frame = mStManager.drawImage();
-		mEGLWrapper.makeCurrent(false, videoCodec.videoCodecInputSurface);
+		mEGLWrapper.makeCurrent(false, videoInputSurface);
 		videoCodec.runQue(false); // clear que before posting should this be on this thread???
 		if (videoStartNs == 0) videoStartNs = mSt.getTimestamp();
 		nextFrame(false, videoFrameCount);
